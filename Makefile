@@ -1,23 +1,41 @@
-# Compiler
-CXX = g++
-
-# Compiler flags
-CXXFLAGS = -Wall -Wextra -std=c++11 -Iinclude `sdl2-config --cflags`
-
-# Linker flags
+# Compiler settings
+CC = g++
+CFLAGS = -Wall -Wextra -std=c++11 -Iinclude `sdl2-config --cflags`
 LDFLAGS = `sdl2-config --libs`
 
-# Source and output files
-SRC = src/main.cpp
-OUT = Vanguard_3D
+# Directories
+SRC_DIR = src
+OBJ_DIR = obj
+BIN_DIR = bin
+INCLUDE_DIR = include
 
-# Default target
-all: $(OUT)
+# Target binary
+TARGET = $(BIN_DIR)/Vanguard_3D
 
-# Build the output executable
-$(OUT): $(SRC)
-	$(CXX) $(CXXFLAGS) -o $(OUT) $(SRC) $(LDFLAGS)
+# Source files
+SRCS = $(wildcard $(SRC_DIR)/*.cpp)
 
-# Clean up generated files
+# Object files (place them in the obj/ directory)
+OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
+
+# Ensure obj and bin directories exist
+# This is a good practice to prevent errors
+$(shell mkdir -p $(OBJ_DIR))
+$(shell mkdir -p $(BIN_DIR))
+
+# Build target
+all: $(TARGET)
+
+# Compile the target binary
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+# Compile source files into object files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Clean up
 clean:
-	rm -f $(OUT)
+	rm -f $(OBJ_DIR)/*.o $(TARGET)
+
+.PHONY: all clean
