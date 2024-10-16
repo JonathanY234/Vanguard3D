@@ -69,16 +69,8 @@ int main() {
         }
 
         // Clear the back buffer with black color
-        SDL_FillRect(backBuffer, NULL, SDL_MapRGB(backBuffer->format, 0, 0, 0));
+        //SDL_FillRect(backBuffer, NULL, SDL_MapRGB(backBuffer->format, 0, 0, 0));
 
-        // Draw something on the back buffer (example: a simple gradient)
-        //for (int y = 0; y < Settings::getScreenHeight(); y++) {
-        //    for (int x = 0; x < Settings::getScreenWidth(); x++) {
-        //        // Create a gradient effect
-        //        Uint32 color = SDL_MapRGB(backBuffer->format, x % 256, y % 256, 0);
-        //        setPixel(backBuffer, x, y, color);
-        //    }
-        //}
         drawFrame();
 
         // Copy back buffer to the front buffer
@@ -100,6 +92,7 @@ int main() {
 
     // Clean up
     SDL_FreeSurface(backBuffer);
+    SDL_FreeSurface(frontBuffer);
     SDL_DestroyWindow(window);
     SDL_Quit();
 
