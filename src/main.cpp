@@ -2,16 +2,18 @@
 #include <iostream>
 
 #include "settings.h"
-
-
-
+#include "renderer.h"
 
 
 // Function to set a pixel on the surface
-void setPixel(SDL_Surface* surface, int x, int y, Uint32 color) {
-    Uint32* pixels = (Uint32*)surface->pixels;
-    pixels[(y * surface->w) + x] = color;
-}
+//void setPixel(SDL_Surface* surface, int x, int y, Uint32 colour) {
+//    Uint32* pixels = (Uint32*)surface->pixels;
+//    pixels[(y * surface->w) + x] = colour;
+//}
+
+// Define the global backBuffer
+SDL_Surface* backBuffer = nullptr;
+
 
 int main() {
     // data for frame rate cap
@@ -39,7 +41,8 @@ int main() {
     }
 
     // Create two surfaces for double buffering
-    SDL_Surface* backBuffer = SDL_CreateRGBSurface(0, Settings::getScreenWidth(), Settings::getScreenHeight(), 32,
+    // SDL_Surface* 
+    backBuffer = SDL_CreateRGBSurface(0, Settings::getScreenWidth(), Settings::getScreenHeight(), 32,
         0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
     
     SDL_Surface* frontBuffer = SDL_GetWindowSurface(window);
@@ -66,16 +69,17 @@ int main() {
         }
 
         // Clear the back buffer with black color
-        //SDL_FillRect(backBuffer, NULL, SDL_MapRGB(backBuffer->format, 0, 0, 0));
+        SDL_FillRect(backBuffer, NULL, SDL_MapRGB(backBuffer->format, 0, 0, 0));
 
         // Draw something on the back buffer (example: a simple gradient)
-        for (int y = 0; y < Settings::getScreenHeight(); y++) {
-            for (int x = 0; x < Settings::getScreenWidth(); x++) {
-                // Create a gradient effect
-                Uint32 color = SDL_MapRGB(backBuffer->format, x % 256, y % 256, 0);
-                setPixel(backBuffer, x, y, color);
-            }
-        }
+        //for (int y = 0; y < Settings::getScreenHeight(); y++) {
+        //    for (int x = 0; x < Settings::getScreenWidth(); x++) {
+        //        // Create a gradient effect
+        //        Uint32 color = SDL_MapRGB(backBuffer->format, x % 256, y % 256, 0);
+        //        setPixel(backBuffer, x, y, color);
+        //    }
+        //}
+        drawFrame();
 
         // Copy back buffer to the front buffer
         // swap pointers for efficienct double buffering
