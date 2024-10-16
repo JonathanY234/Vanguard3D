@@ -15,11 +15,10 @@ TARGET = $(BIN_DIR)/Vanguard_3D
 # Source files
 SRCS = $(wildcard $(SRC_DIR)/*.cpp)
 
-# Object files (place them in the obj/ directory)
+# Object files
 OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 
-# Ensure obj and bin directories exist
-# This is a good practice to prevent errors
+# Ensure obj and bin directories exist to prevent errors
 $(shell mkdir -p $(OBJ_DIR))
 $(shell mkdir -p $(BIN_DIR))
 

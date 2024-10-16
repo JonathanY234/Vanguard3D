@@ -1,5 +1,5 @@
 bin/
 obj/
+*.o
 # dont include temp files from open files
 *swp
-*.o
