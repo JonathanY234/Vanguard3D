@@ -2,10 +2,11 @@
 #include <cmath>
 
 
-int Settings::screenHeight = 600;
-int Settings::screenWidth = 800;
+int Settings::screenHeight = 1000;
+int Settings::screenWidth = 1600;
 int Settings::fps = 60;
-double Settings::fov = 90;
+double Settings::fov = 70;
+// add fov adjustions for aspect ratio
 
 int Settings::getScreenHeight() {
     return screenHeight;

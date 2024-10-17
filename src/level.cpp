@@ -1,93 +1,102 @@
 #include <cmath>
+#include <tuple>
 
 #include "level.h"
 #include "settings.h"
 
-static int level[10][10] = {
-    {0,0,1,0,0,1,1,0,0,0},
-    {0,0,1,1,1,1,1,0,0,0},
-    {0,1,1,0,0,0,0,0,0,0},
-    {0,1,1,0,0,1,1,0,0,0},
-    {0,1,0,0,0,0,1,0,0,0},
-    {0,1,0,0,0,0,1,0,0,0},
-    {0,1,1,0,0,1,1,0,0,0},
-    {0,1,1,0,0,1,1,0,0,0},
-    {0,1,1,0,0,1,1,0,0,0},
-    {0,1,1,1,1,1,1,0,0,0}
+//static int level[10][10] = {
+//    {0,0,1,0,0,1,1,0,0,0},
+//    {0,0,1,1,1,1,1,0,0,0},
+//    {0,1,1,0,0,0,0,0,0,0},
+//    {0,1,1,0,0,1,1,0,0,0},
+//    {0,1,0,0,0,0,1,0,0,0},
+//    {0,1,0,0,0,0,1,0,0,0},
+//    {0,1,1,0,0,1,1,0,0,0},
+//    {0,1,1,0,0,1,1,0,0,0},
+//    {0,1,1,0,0,1,1,0,0,0},
+//    {0,1,1,1,1,1,1,0,0,0}
+//};
+static int level[5][5] = {
+    {0,0,0,0,0},
+    {0,0,0,0,0},
+    {0,0,0,0,0},
+    {0,0,0,1,1},
+    {0,0,0,0,0}
 };
-double raycast(double x, double y, double angle) {
-    // Direction of the ray (unit vector)
+std::tuple<double, int> raycast(double rayX, double rayY, double angle) {
+    //The out of bounds areas of the level array
+    int levelSizeX = sizeof(level[0])/sizeof(level[0][0]);
+    int levelSizeY = sizeof(level) / sizeof(level[0]);
+    
+    //direction of the ray (unit vector)
     double rayDirX = cos(angle);
     double rayDirY = sin(angle);
 
-    // Grid stepping
-    int gridX = static_cast<int>(x);
-    int gridY = static_cast<int>(y);
+    //which box of the map we're in
+    int mapX = int(rayX);
+    int mapY = int(rayY);
 
-    // Level dimensions (adjust this based on your grid size)
-    const int levelWidth = 10;
-    const int levelHeight = 10;
+    //length of ray from current position to next x or y-side
+    double sideDistX;
+    double sideDistY;
 
-    // Calculate the distance to the next x and y grid lines
-    double deltaDistX = std::abs(1.0 / rayDirX);
-    double deltaDistY = std::abs(1.0 / rayDirY);
+    //length of ray from one x or y-side to next x or y-side
+    double deltaDistX = (rayDirX == 0) ? 1e30 : std::abs(1 / rayDirX);
+    double deltaDistY = (rayDirY == 0) ? 1e30 : std::abs(1 / rayDirY);
 
-    // Determine step direction (+1 for forward, -1 for backward)
-    int stepX, stepY;
-    double sideDistX, sideDistY;
+    
+    //what direction to step in x or y-direction (either +1 or -1)
+    int stepX;
+    int stepY;
 
-    if (rayDirX < 0) {
+    int hit = 0; //was there a wall hit?
+    int side; //was a NS or a EW wall hit?
+
+    //calculate step and initial sideDist
+    if(rayDirX < 0) {
         stepX = -1;
-        sideDistX = (x - gridX) * deltaDistX;
+        sideDistX = (rayX - mapX) * deltaDistX;
     } else {
         stepX = 1;
-        sideDistX = (gridX + 1.0 - x) * deltaDistX;
+        sideDistX = (mapX + 1.0 - rayX) * deltaDistX;
     }
-
-    if (rayDirY < 0) {
+    if(rayDirY < 0) {
         stepY = -1;
-        sideDistY = (y - gridY) * deltaDistY;
+        sideDistY = (rayY - mapY) * deltaDistY;
     } else {
         stepY = 1;
-        sideDistY = (gridY + 1.0 - y) * deltaDistY;
+        sideDistY = (mapY + 1.0 - rayY) * deltaDistY;
     }
-
-    // DDA loop to step through the grid
-    bool hit = false;
-    int side;
-
-    // Make sure we're inside the grid
-    while (!hit) {
-        // Step to the next grid line (either in x or y direction)
-        if (sideDistX < sideDistY) {
+    //perform DDA
+    while (hit == 0) {
+        //jump to next map square, either in x-direction, or in y-direction
+        if(sideDistX < sideDistY) {
             sideDistX += deltaDistX;
-            gridX += stepX;
-            side = 0; // Vertical wall hit
+            mapX += stepX;
+            side = 0;
         } else {
             sideDistY += deltaDistY;
-            gridY += stepY;
-            side = 1; // Horizontal wall hit
+            mapY += stepY;
+            side = 1;
         }
+        //Check if ray has hit a wall
+        if(level[mapX][mapY] > 0) hit = 1;
 
-        // Check boundaries to prevent out-of-bounds access
-        if (gridX < 0 || gridX >= levelWidth || gridY < 0 || gridY >= levelHeight) {
-            // Ray went out of bounds
-            return -1; // Indicating no wall was hit within bounds
-        }
-
-        // Check if we hit a wall (assuming 'level' is a global grid)
-        if (level[gridX][gridY] == 1) {
-            hit = true;
+        // Check if ray is out of bounds and treat that as a hit 
+        // could optimise by requiring levels to be surrounded by walls
+        if (mapX < 0 || mapX >= levelSizeX || mapY < 0 || mapY >= levelSizeY) {
+            hit = 1;
+            break;
         }
     }
+    
+    //Calculate distance of perpendicular ray (Euclidean distance would give fisheye effect!)
+    double perpWallDist;
+    if(side == 0) perpWallDist = (sideDistX - deltaDistX);
+    else          perpWallDist = (sideDistY - deltaDistY);
 
-    // Calculate the distance to the wall
-    double distance;
-    if (side == 0) {
-        distance = (gridX - x + (1 - stepX) / 2) / rayDirX;
-    } else {
-        distance = (gridY - y + (1 - stepY) / 2) / rayDirY;
-    }
 
-    return distance;
+
+    return std::make_tuple(perpWallDist, side);
+
 }
