@@ -22,7 +22,6 @@ static void setPixel(int x, int y, Uint32 colour) {
 static void drawColumn(int x, int wallHeight, int wallType) {
     if (wallHeight > Settings::getScreenHeight()) {
         wallHeight = Settings::getScreenHeight();
-        std::cout << "wall too tall\n";
     }
     if (wallHeight < 0) wallHeight = 0;
 
@@ -53,18 +52,13 @@ static void drawColumn(int x, int wallHeight, int wallType) {
     }
 }
 
-//temp
-int x = 2;
-int y = 2;
-double facingAngle = 3.14159; //in radians
-//
-void drawFrame() {
-    //temp
-    facingAngle = facingAngle + 0.01;
-    //
+
+void drawFrame(const std::shared_ptr<Player>& player) {
+    
+    auto [x, y] = player->getPosition();
 
     double degreesPerPixel = Settings::getFov() / Settings::getScreenWidth();
-    double raycastAngle = facingAngle - (Settings::getFov()/2); // starting value for leftmost column
+    double raycastAngle = player->getRotation() - (Settings::getFov()/2); // starting value for leftmost column
     int wallHeight;
     for (int i=0; i < Settings::getScreenWidth(); i++) {
         //std::cout << "raycast distance: " << raycast(x, y, raycastAngle) << "\n" << std::flush;
