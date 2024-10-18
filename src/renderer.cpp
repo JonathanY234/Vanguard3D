@@ -65,11 +65,11 @@ void drawFrame(const std::shared_ptr<Player>& player) {
         //std::cout << "wall height: " << (int)(Settings::getScreenHeight() / raycast(x, y, raycastAngle)) << "\n" << std::flush;
 
         auto [distance, side] = raycast(x, y, raycastAngle);
-        wallHeight = (int)(Settings::getScreenHeight() / distance);
+        distance = distance * cos(raycastAngle - player->getRotation()); // fish eye effect corrections
+
+        wallHeight = (int)(1.5 * Settings::getScreenHeight() / distance);
  
         raycastAngle = raycastAngle + degreesPerPixel;
-
-
 
         drawColumn(i, wallHeight, side);
     }

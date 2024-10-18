@@ -4,6 +4,9 @@
 #include "level.h"
 #include "settings.h"
 
+//temp
+#include <iostream>
+
 //static int level[15][15] = {
 //    {0,0,0,0,0,1,0,0,0,1,0,0,0,0,0},
 //    {0,1,1,0,0,0,1,0,1,0,0,0,1,1,0},
@@ -105,13 +108,15 @@ std::tuple<double, int> raycast(double rayX, double rayY, double angle) {
         }
     }
     
-    //Calculate distance of perpendicular ray (Euclidean distance would give fisheye effect)
-    double perpWallDist;
-    if(side == 0) perpWallDist = (sideDistX - deltaDistX);
-    else          perpWallDist = (sideDistY - deltaDistY);
+    //Calculate distance of perpendicular ray
+    double wallDist;
+    if(side == 0) wallDist = (sideDistX - deltaDistX);
+    else          wallDist = (sideDistY - deltaDistY);
+
+    //std::cout << "ray dists: " << perpWallDist << " " << sideDistX << " " << deltaDistX << "\n"
 
 
 
-    return std::make_tuple(perpWallDist, side);
+    return std::make_tuple(wallDist, side);
 
 }
