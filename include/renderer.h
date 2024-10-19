@@ -8,6 +8,6 @@
 // Declare the backBuffer globally so other files can use it
 extern SDL_Surface* backBuffer;
 
-void drawFrame(const std::shared_ptr<Player>& player);
+void drawFrame(double positionX, double positionY, double rotation);
 
 #endif

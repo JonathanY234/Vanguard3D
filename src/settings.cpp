@@ -5,7 +5,7 @@
 int Settings::screenHeight = 1000;
 int Settings::screenWidth = 1800;
 int Settings::fps = 60;
-double Settings::fov = 70;
+double Settings::fov = 60;
 // add fov adjustions for aspect ratio
 
 int Settings::getScreenHeight() {

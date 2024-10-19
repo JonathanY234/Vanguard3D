@@ -18,6 +18,9 @@ int main() {
     // data for deltaTime
     double deltaTime;
     Uint32 previousFrameStart = SDL_GetTicks();
+    //fps counter
+    //int frameCount = 0;
+    //float fps = 0;
 
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -53,8 +56,12 @@ int main() {
     }
 
     // make the player object
-    std::shared_ptr<Player> firstPlayer = std::make_shared<Player>(2, 2, 0);
-    // oh fancy smart pointer
+    std::shared_ptr<Player> firstPlayer = std::make_shared<Player>(0.5, 0.5, 0);
+    // ooh fancy smart pointer
+
+    //mouselook stuff
+    SDL_SetRelativeMouseMode(SDL_TRUE);
+    int deltaX;
 
     // Main loop to keep the window open
     bool running = true;
@@ -64,41 +71,57 @@ int main() {
     while (running) {
         // get deltatime and frame limiter
         currentFrameStart = SDL_GetTicks();
-        deltaTime = (currentFrameStart - previousFrameStart) / 1000.0; // Convert to seconds
+        deltaTime = (currentFrameStart - previousFrameStart) / 1000.0; // convert to seconds
         previousFrameStart = currentFrameStart;
 
         // Handle events
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
-                running = false; // Exit the loop if the window is closed
+                running = false; // exit if the window is closed
+            }
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    running = false; // exit on ESC key
+                }
             }
         }
         // Get the current state of the keyboard
         keyboardState = SDL_GetKeyboardState(NULL);
         // Check for specific keys
-        if (keyboardState[SDL_SCANCODE_W]) {
-            firstPlayer->moveForward(5 * deltaTime);
-        }
-        if (keyboardState[SDL_SCANCODE_S]) {
-            firstPlayer->moveForward(-5 * deltaTime);
-        }
-        if (keyboardState[SDL_SCANCODE_A]) {
-            firstPlayer->moveSideways(-3 * deltaTime);
-        }
-        if (keyboardState[SDL_SCANCODE_D]) {
-            firstPlayer->moveSideways(3 * deltaTime);
-        }
+
+        // mouse look
+        SDL_GetRelativeMouseState(&deltaX, nullptr);
+        firstPlayer->turn(deltaX * 0.004);
+        // arrow keys look
         if (keyboardState[SDL_SCANCODE_LEFT]) {
             firstPlayer->turn(-1.5 * deltaTime);
         }
         if (keyboardState[SDL_SCANCODE_RIGHT]) {
             firstPlayer->turn(1.5 * deltaTime);
         }
+        // player movement
+        double forwardAmount = 0.0;
+        double sidewaysAmount = 0.0;
+        if (keyboardState[SDL_SCANCODE_W]) {
+            forwardAmount += 5;
+        }
+        if (keyboardState[SDL_SCANCODE_S]) {
+            forwardAmount -= 5;
+        }
+        if (keyboardState[SDL_SCANCODE_A]) {
+            sidewaysAmount -= 3;
+        }
+        if (keyboardState[SDL_SCANCODE_D]) {
+            sidewaysAmount += 3;
+        }
+        firstPlayer->move(forwardAmount * deltaTime, sidewaysAmount * deltaTime);
+        
 
-        // Clear the back buffer with black color
+        // Clear the back buffer with black color (not nessesary)
         //SDL_FillRect(backBuffer, NULL, SDL_MapRGB(backBuffer->format, 0, 0, 0));
 
-        drawFrame(firstPlayer); // meybe just through location and direction into drawframe not the whole object
+        auto [x, y] = firstPlayer->getPosition();
+        drawFrame(x, y, firstPlayer->getRotation());
 
         // Copy back buffer to the front buffer
         // swap pointers for efficienct double buffering
@@ -109,7 +132,18 @@ int main() {
         // Update the window surface to display the front buffer
         SDL_UpdateWindowSurface(window);
 
+
         actualFrameTime = SDL_GetTicks() - currentFrameStart; // Calculate how long the frame took
+
+        // Update FPS every 100 frames
+        //frameCount++;
+        //if (frameCount == 100) {
+        //    fps = 1000.0f / (double)actualFrameTime;  // Calculate FPS (time for 1 frame in milliseconds)
+        //    std::cout << "FPS: " << fps << std::endl;
+        //    frameCount = 0;  // Reset the frame count after printing FPS
+        //}
+
+        
         // Delay to maintain target FPS
         if (actualFrameTime < Settings::getFrameTime()) {
             SDL_Delay(Settings::getFrameTime() - actualFrameTime);

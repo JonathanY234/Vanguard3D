@@ -1,5 +1,5 @@
 #include <iostream>
-#include <cstdlib> // For system()
+//#include <cstdlib> // For system()
 #include <tuple>
 
 #include <SDL.h>
@@ -7,10 +7,10 @@
 #include "settings.h"
 #include "level.h"
 
-Uint32 floorColour = 0xFF404040;
-Uint32 offBlue = 0xFF6464C8;
-Uint32 wallColour = 0xFF0000FF;
-Uint32 ceilingColour = 0xFF808080;
+static Uint32 floorColour = 0xFF606060;
+static Uint32 blue = 0xFF6464C8;
+static Uint32 offBlue = 0xFF0000FF;
+static Uint32 ceilingColour = 0xFF404040;
 
 
 // function to set the colour of the screen, no bounds checking, uses the global backbuffer
@@ -25,18 +25,13 @@ static void drawColumn(int x, int wallHeight, int wallType) {
     }
     if (wallHeight < 0) wallHeight = 0;
 
-    //temp
-    Uint32 floorColour = 0xFF606060;
-    Uint32 blue = 0xFF0000FF;
-    Uint32 offBlue = 0xFF6464C8;
-    Uint32 ceilingColour = 0xFF404040;
     Uint32 wallColour;
     if (wallType == 0) {
         wallColour = blue;
-    } else if (wallType == 1) {
+    } else { //if (wallType == 1) {
         wallColour = offBlue;
     }
-    //
+
     int screenHeight = Settings::getScreenHeight();
     int floorTop = (screenHeight-wallHeight) /2;
     int wallTop = floorTop + wallHeight;
@@ -53,19 +48,18 @@ static void drawColumn(int x, int wallHeight, int wallType) {
 }
 
 
-void drawFrame(const std::shared_ptr<Player>& player) {
+void drawFrame(double positionX, double positionY, double rotation) {
     
-    auto [x, y] = player->getPosition();
 
     double degreesPerPixel = Settings::getFov() / Settings::getScreenWidth();
-    double raycastAngle = player->getRotation() - (Settings::getFov()/2); // starting value for leftmost column
+    double raycastAngle = rotation - (Settings::getFov()/2); // starting value for leftmost column
     int wallHeight;
     for (int i=0; i < Settings::getScreenWidth(); i++) {
         //std::cout << "raycast distance: " << raycast(x, y, raycastAngle) << "\n" << std::flush;
         //std::cout << "wall height: " << (int)(Settings::getScreenHeight() / raycast(x, y, raycastAngle)) << "\n" << std::flush;
 
-        auto [distance, side] = raycast(x, y, raycastAngle);
-        distance = distance * cos(raycastAngle - player->getRotation()); // fish eye effect corrections
+        auto [distance, side] = raycast(positionX, positionY, raycastAngle);
+        distance = distance * cos((raycastAngle - rotation) * 0.95); // fish eye effect corrections (0.95 keeps the effect a tiny bit)
 
         wallHeight = (int)(1.5 * Settings::getScreenHeight() / distance);
  
@@ -74,6 +68,6 @@ void drawFrame(const std::shared_ptr<Player>& player) {
         drawColumn(i, wallHeight, side);
     }
     
-    //setPixel(20,20,0xFFFF0000);
+    setPixel(Settings::getScreenWidth()/2, Settings::getScreenHeight()/2,0xFFFF0000);
 }
 

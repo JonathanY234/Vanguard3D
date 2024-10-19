@@ -18,20 +18,31 @@ std::tuple<double, double> Player::getPosition() {
 double Player::getRotation() {
     return rotation;
 }
-void Player::moveForward(double amount) {
+void Player::move(double forwardAmount, double sidewaysAmount) {
     // double hitbox radius
     
-    //int attemptedMoveX = amount * cos(rotation);
-    //int attemptedMoveY = amount * sin(rotation);
-    positionX += amount * cos(rotation);
-    positionY += amount * sin(rotation);
+    // https://www.gamedev.net/tutorials/_/technical/game-programming/swept-aabb-collision-detection-and-response-r3084/
+    
+    // calculate the movement in X and Y directions based on the rotation
+    double movementX = forwardAmount * cos(rotation) + sidewaysAmount * cos(rotation + M_PI_2);
+    double movementY = forwardAmount * sin(rotation) + sidewaysAmount * sin(rotation + M_PI_2);
 
-    //raycast in that direction and if the distance is < amount then reduce amount
+    // calculate the hypotenuse of the movement vector
+    double length = sqrt(movementX * movementX + movementY * movementY);
+
+    // normalize the movement vector
+    if ((length > std::abs(forwardAmount)) && (forwardAmount != 0)) {
+        positionX += (movementX / length) * std::abs(forwardAmount);
+        positionY += (movementY / length) * std::abs(forwardAmount);
+    } else {
+        positionX += movementX;
+        positionY += movementY;
+    }
 }
-void Player::moveSideways(double amount) {
-    positionX += amount * cos(rotation + M_PI_2);//M_PI_2 is PI/2
-    positionY += amount * sin(rotation + M_PI_2);
-}
+//void Player::moveSideways(double amount) {
+//    positionX += amount * cos(rotation + M_PI_2);//M_PI_2 is PI/2
+//    positionY += amount * sin(rotation + M_PI_2);
+//}
 void Player::turn(double amount) {
     rotation += amount;
     //probably dont need to normalise value between 0-2PI

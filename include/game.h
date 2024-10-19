@@ -10,8 +10,8 @@ public:
     Player(double x, double y, double angle);
     std::tuple<double, double> getPosition();
     double getRotation();
-    void moveForward(double amount);
-    void moveSideways(double amount);
+    void move(double forwardAmount, double sidewaysAmount);
+    //void moveSideways(double amount);
     void turn(double amount);
 };
 
