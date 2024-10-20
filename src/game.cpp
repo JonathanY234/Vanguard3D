@@ -18,8 +18,6 @@ double Player::getRotation() {
 }
 void Player::move(double forwardAmount, double sidewaysAmount) {
     
-    // https://www.gamedev.net/tutorials/_/technical/game-programming/swept-aabb-collision-detection-and-response-r3084/
-    
     // calculate the movement in X and Y directions based on the rotation
     double movementX = forwardAmount * cos(rotation) + sidewaysAmount * cos(rotation + M_PI_2);
     double movementY = forwardAmount * sin(rotation) + sidewaysAmount * sin(rotation + M_PI_2);
@@ -86,10 +84,6 @@ bool Player::isPlayerCollidingWall(double playerX, double playerY) {
             isWall(playerX - size, playerY - size) || 
             isWall(playerX - size, playerY + size) || 
             isWall(playerX + size, playerY - size));
-    //return (isWall(playerX + size, playerY) || 
-    //        isWall(playerX - size, playerY) || 
-    //        isWall(playerX, playerY + size) || 
-    //        isWall(playerX, playerY - size));
 }
 
 void Player::turn(double amount) {

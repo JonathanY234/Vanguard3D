@@ -39,7 +39,7 @@ bool isWall(int x, int y) {
     }
     return level[x][y];
     // any non-zero value is treated as true
-    // if I add new types of walls this needs to be modified
+    // if I add new types of walls this may needs to be modified
 }
 std::tuple<double, int> raycast(double rayX, double rayY, double angle) {
     //The out of bounds areas of the level array
