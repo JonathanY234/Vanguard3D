@@ -6,8 +6,11 @@ private:
     double positionX;
     double positionY;
     double rotation;
+    double size;
+    //void pushOutOfWalls(double directionX, double directionY);
+    bool isPlayerCollidingWall(double playerX, double playerY);
 public:
-    Player(double x, double y, double angle);
+    Player(double x, double y, double rotation, double size);
     std::tuple<double, double> getPosition();
     double getRotation();
     void move(double forwardAmount, double sidewaysAmount);

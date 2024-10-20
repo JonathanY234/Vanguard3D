@@ -25,13 +25,26 @@ static int level[15][15] = {
     {0,0,0,0,1,0,0,0,0,0,1,0,0,0,0},
     {1,1,1,1,0,0,0,0,0,0,0,1,1,1,1},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,1,0,0,0,0,0,0,0,0,0,0,0,1,1},
+    {0,1,0,0,0,0,0,1,0,0,0,0,0,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1}
 };
+// Get the out of bounds areas of the level array
+static int levelSizeX = sizeof(level[0])/sizeof(level[0][0]);
+static int levelSizeY = sizeof(level) / sizeof(level[0]);
+
+bool isWall(int x, int y) {
+    // when double is passed it is trunkated to int
+    if (x < 0 || y < 0 || x >= levelSizeX || y >= levelSizeY) {
+        return true;
+    }
+    return level[x][y];
+    // any non-zero value is treated as true
+    // if I add new types of walls this needs to be modified
+}
 std::tuple<double, int> raycast(double rayX, double rayY, double angle) {
     //The out of bounds areas of the level array
-    int levelSizeX = sizeof(level[0])/sizeof(level[0][0]);
-    int levelSizeY = sizeof(level) / sizeof(level[0]);
+    //int levelSizeX = sizeof(level[0])/sizeof(level[0][0]);
+    //int levelSizeY = sizeof(level) / sizeof(level[0]);
     
     //direction of the ray (unit vector)
     double rayDirX = cos(angle);

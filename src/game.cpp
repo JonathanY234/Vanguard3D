@@ -7,11 +7,9 @@
 //temp
 #include <iostream>
 
-Player::Player(double x, double y, double angle) {
-    positionX = x;
-    positionY = y;
-    rotation = angle;
-}
+Player::Player(double x, double y, double rotation, double size)
+    : positionX(x), positionY(y), rotation(rotation), size(size) {}
+
 std::tuple<double, double> Player::getPosition() {
     return std::make_tuple(positionX, positionY);
 }
@@ -19,7 +17,6 @@ double Player::getRotation() {
     return rotation;
 }
 void Player::move(double forwardAmount, double sidewaysAmount) {
-    // double hitbox radius
     
     // https://www.gamedev.net/tutorials/_/technical/game-programming/swept-aabb-collision-detection-and-response-r3084/
     
@@ -27,22 +24,74 @@ void Player::move(double forwardAmount, double sidewaysAmount) {
     double movementX = forwardAmount * cos(rotation) + sidewaysAmount * cos(rotation + M_PI_2);
     double movementY = forwardAmount * sin(rotation) + sidewaysAmount * sin(rotation + M_PI_2);
 
+    // proposed new position
+    double newX;
+    double newY;
+
     // calculate the hypotenuse of the movement vector
     double length = sqrt(movementX * movementX + movementY * movementY);
 
     // normalize the movement vector
     if ((length > std::abs(forwardAmount)) && (forwardAmount != 0)) {
-        positionX += (movementX / length) * std::abs(forwardAmount);
-        positionY += (movementY / length) * std::abs(forwardAmount);
+        newX = positionX + (movementX / length) * std::abs(forwardAmount);
+        newY = positionY + (movementY / length) * std::abs(forwardAmount);
     } else {
-        positionX += movementX;
-        positionY += movementY;
+        newX = positionX + movementX;
+        newY = positionY + movementY;
     }
+    // correct for any collisions
+    // yes this is bad it repeats code, need to improve
+    if (std::abs(forwardAmount) > std::abs(sidewaysAmount)) {
+        if (isPlayerCollidingWall(newX, positionY)) { // collision caused by X movement
+            if (movementX > 0) {
+                newX = std::floor(newX+size) - (size+0.0001);// +0.01 to avoid floating point inaccuracies
+                
+            } else {
+                newX = std::ceil(newX-size) + (size+0.0001);
+            }
+            
+        }
+        if (isPlayerCollidingWall(positionX, newY)) { // collision caused by Y movement
+            if (movementY > 0) {
+                newY = std::floor(newY+size) - (size+0.0001);
+            } else {
+                newY = std::ceil(newY-size) + (size+0.0001);
+            }
+        }
+    } else {
+        if (isPlayerCollidingWall(positionX, newY)) { // collision caused by Y movement
+            if (movementY > 0) {
+                newY = std::floor(newY+size) - (size+0.001);
+            } else {
+                newY = std::ceil(newY-size) + (size+0.001);
+            }
+        }
+        if (isPlayerCollidingWall(newX, positionY)) { // collision caused by X movement
+            if (movementX > 0) {
+                newX = std::floor(newX+size) - (size+0.001);// +0.01 to avoid floating point inaccuracies
+                
+            } else {
+                newX = std::ceil(newX-size) + (size+0.001);
+            }
+        }
+    }
+    positionX = newX;
+    positionY = newY;
+
+    
 }
-//void Player::moveSideways(double amount) {
-//    positionX += amount * cos(rotation + M_PI_2);//M_PI_2 is PI/2
-//    positionY += amount * sin(rotation + M_PI_2);
-//}
+bool Player::isPlayerCollidingWall(double playerX, double playerY) {
+    // swastica pattern, check four corners
+    return (isWall(playerX + size, playerY + size) || 
+            isWall(playerX - size, playerY - size) || 
+            isWall(playerX - size, playerY + size) || 
+            isWall(playerX + size, playerY - size));
+    //return (isWall(playerX + size, playerY) || 
+    //        isWall(playerX - size, playerY) || 
+    //        isWall(playerX, playerY + size) || 
+    //        isWall(playerX, playerY - size));
+}
+
 void Player::turn(double amount) {
     rotation += amount;
     //probably dont need to normalise value between 0-2PI

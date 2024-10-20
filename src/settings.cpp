@@ -4,7 +4,7 @@
 
 int Settings::screenHeight = 1000;
 int Settings::screenWidth = 1800;
-int Settings::fps = 60;
+int Settings::fps = 60; // could set this value based on sdl functions to get refresh rate
 double Settings::fov = 60;
 // add fov adjustions for aspect ratio
 

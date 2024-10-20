@@ -56,7 +56,7 @@ int main() {
     }
 
     // make the player object
-    std::shared_ptr<Player> firstPlayer = std::make_shared<Player>(0.5, 0.5, 0);
+    std::shared_ptr<Player> firstPlayer = std::make_shared<Player>(0.5, 0.5, 0, 0.35);
     // ooh fancy smart pointer
 
     //mouselook stuff
