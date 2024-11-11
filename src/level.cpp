@@ -102,6 +102,7 @@ std::tuple<double, int> raycast(double rayX, double rayY, double angle) {
 
         // Check if ray is out of bounds and treat that as a hit 
         // could optimise by requiring levels to be surrounded by walls
+        // check at launch that all maps are surrounded by walls, to avoid human error 
         if (mapX < 0 || mapX >= levelSizeX || mapY < 0 || mapY >= levelSizeY) {
             hit = 1;
             break;

@@ -1,7 +1,7 @@
 # Compiler settings
 CC = g++
 CFLAGS = -Wall -Wextra -std=c++17 -O3 -Iinclude `sdl2-config --cflags`
-LDFLAGS = `sdl2-config --libs`
+LDFLAGS = -lSDL2_image `sdl2-config --libs`
 
 # Directories
 SRC_DIR = src

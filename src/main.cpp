@@ -6,15 +6,28 @@
 #include "renderer.h"
 #include "game.h"
 
+//texture test
+#include "load_textures.h"
+
+static void setPixel(int x, int y, Uint32 colour) {
+    Uint32* pixels = (Uint32*)backBuffer->pixels;
+    pixels[(y * backBuffer->w) + x] = colour;
+}
+
 
 // Define the global backBuffer
 SDL_Surface* backBuffer = nullptr;
 
 
 int main() {
+    //texture test
+    load_textures();
+    
+
     // data for frame rate cap
     Uint32 currentFrameStart;
     double actualFrameTime;
+
     // data for deltaTime
     double deltaTime;
     Uint32 previousFrameStart = SDL_GetTicks();
@@ -61,7 +74,7 @@ int main() {
 
     //mouselook stuff
     SDL_SetRelativeMouseMode(SDL_TRUE);
-    int deltaX;
+    int mouseDeltaX;
 
     // Main loop to keep the window open
     bool running = true;
@@ -90,8 +103,8 @@ int main() {
         // Check for specific keys
 
         // mouse look
-        SDL_GetRelativeMouseState(&deltaX, nullptr);
-        firstPlayer->turn(deltaX * 0.004);
+        SDL_GetRelativeMouseState(&mouseDeltaX, nullptr);
+        firstPlayer->turn(mouseDeltaX * 0.004);
         // arrow keys look
         if (keyboardState[SDL_SCANCODE_LEFT]) {
             firstPlayer->turn(-1.5 * deltaTime);
@@ -122,6 +135,15 @@ int main() {
 
         auto [x, y] = firstPlayer->getPosition();
         drawFrame(x, y, firstPlayer->getRotation());
+
+        //Texture test
+        Texture* text1 = textures[0];
+        for (int x=0;x<100;x++) {
+            for (int y=0;y<100;y++) {
+                setPixel(x,y, text1->test_getPixel(x,y));
+            }
+        }
+        //end texture test
 
         // Copy back buffer to the front buffer
         // swap pointers for efficienct double buffering

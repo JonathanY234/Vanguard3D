@@ -8,5 +8,6 @@ Currently just featuring basic rendering and movement. But I intend to make it i
 Compile by running the command `make` in the project directory.
 You may need some sdl dev dependencies.
 
+
 ![alt text](images/demo1.png)
 ![alt text](images/demo2.png)

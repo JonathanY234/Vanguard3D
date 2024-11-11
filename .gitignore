@@ -2,3 +2,4 @@ bin/
 obj/
 *.o
 *swp
+textures_hi_res/
