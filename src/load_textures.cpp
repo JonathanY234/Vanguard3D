@@ -5,6 +5,7 @@
 #include "load_textures.h"
 // maybe do texture loading concurrently to improve load times?
 
+
 //Texture implementation
 Texture::Texture(SDL_Surface* surface) {
     width = surface->w;
@@ -18,21 +19,25 @@ Texture::Texture(SDL_Surface* surface) {
         }
     }
 }
-std::vector<Uint32> Texture::getColumn(int x, int height) const {
-    return std::vector<Uint32>();
+std::vector<Uint32> Texture::getColumn(double xPosWithinTexture) const {
+
+    int test = (int)(xPosWithinTexture*100);
+
+
+    std::vector<Uint32> img_column = pixelData[test];
+    return img_column;
 }
 Uint32 Texture::test_getPixel(int x, int y) {
     return pixelData[y][x];
 }
 
-static const int number_of_textures = 2;
+static const int number_of_textures = 3;
 Texture* textures[number_of_textures];
 // load textures
 void load_textures() {
     
-    const std::string texture_locations[number_of_textures] = {"brickwall1.png", "metalgrate1.png"};
+    const std::string texture_locations[number_of_textures] = {"metalgrate1.png", "brickwall1.png", "rusty1.png"};
     
-
 
     for (int i=0; i<number_of_textures; i++) {
         std::string filename = "textures/" + texture_locations[i];
@@ -62,7 +67,7 @@ void load_textures() {
         
         textures[i] = new Texture(surface);
         SDL_FreeSurface(surface);
-        SDL_FreeSurface(in_correct_format);
+        //SDL_FreeSurface(in_correct_format);
     }
 }
 // note: we are should probably clean up the texture data on program close

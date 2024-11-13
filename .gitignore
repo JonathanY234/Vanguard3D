@@ -2,4 +2,5 @@ bin/
 obj/
 *.o
 *swp
+.vscode/
 textures_hi_res/

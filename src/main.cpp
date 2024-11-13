@@ -69,7 +69,7 @@ int main() {
     }
 
     // make the player object
-    std::shared_ptr<Player> firstPlayer = std::make_shared<Player>(0.5, 0.5, 0, 0.35);
+    std::shared_ptr<Player> firstPlayer = std::make_shared<Player>(0.5, 0.5, 0.4, 0.35);
     // ooh fancy smart pointer
 
     //mouselook stuff
@@ -137,10 +137,16 @@ int main() {
         drawFrame(x, y, firstPlayer->getRotation());
 
         //Texture test
-        Texture* text1 = textures[0];
+        Texture* text1 = textures[1];
+        //for (int x=0;x<100;x++) {
+        //    for (int y=0;y<100;y++) {
+        //        setPixel(x,y, text1->test_getPixel(x,y));
+        //    }
+        //}
         for (int x=0;x<100;x++) {
+            std::vector<Uint32> vect = text1->getColumn(static_cast<double>(x) / 100);
             for (int y=0;y<100;y++) {
-                setPixel(x,y, text1->test_getPixel(x,y));
+                setPixel(x,y, vect[y]);
             }
         }
         //end texture test

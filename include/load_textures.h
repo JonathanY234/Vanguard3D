@@ -10,7 +10,7 @@ private:
     int width, height;
 public:
     Texture(SDL_Surface* surface);
-    std::vector<Uint32> getColumn(int x, int height) const;
+    std::vector<Uint32> getColumn(double xPosWithinTexture) const;
     Uint32 test_getPixel(int x, int y);
 };
 extern Texture* textures[];
