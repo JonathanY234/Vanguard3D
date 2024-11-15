@@ -1,6 +1,6 @@
 # Compiler settings
 CC = g++
-CFLAGS = -Wall -Wextra -std=c++17 -g -Iinclude `sdl2-config --cflags`
+CFLAGS = -Wall -Wextra -std=c++17 -O3 -Iinclude `sdl2-config --cflags`#-fsanitize=address -g
 LDFLAGS = -lSDL2_image `sdl2-config --libs`
 
 # Directories

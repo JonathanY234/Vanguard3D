@@ -9,10 +9,10 @@
 //texture test
 #include "load_textures.h"
 
-static void setPixel(int x, int y, Uint32 colour) {
-    Uint32* pixels = (Uint32*)backBuffer->pixels;
-    pixels[(y * backBuffer->w) + x] = colour;
-}
+//static void setPixel(int x, int y, Uint32 colour) {
+//    Uint32* pixels = (Uint32*)backBuffer->pixels;
+//    pixels[(y * backBuffer->w) + x] = colour;
+//}
 
 
 // Define the global backBuffer
@@ -137,18 +137,18 @@ int main() {
         drawFrame(x, y, firstPlayer->getRotation());
 
         //Texture test
-        Texture* text1 = textures[1];
+        //Texture* text1 = textures[1];
         //for (int x=0;x<100;x++) {
         //    for (int y=0;y<100;y++) {
         //        setPixel(x,y, text1->test_getPixel(x,y));
         //    }
         //}
-        for (int x=0;x<100;x++) {
-            std::vector<Uint32> vect = text1->getColumn(static_cast<double>(x) / 100);
-            for (int y=0;y<100;y++) {
-                setPixel(x,y, vect[y]);
-            }
-        }
+        //for (int x=0;x<100;x++) {
+        //    std::vector<Uint32> vect = text1->getColumn(static_cast<double>(x) / 100);
+        //    for (int y=0;y<100;y++) {
+        //        setPixel(x,y, vect[y]);
+        //    }
+        //}
         //end texture test
 
         // Copy back buffer to the front buffer

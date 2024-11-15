@@ -18,20 +18,10 @@ static Uint32 ceilingColour = 0xFF404040;
 // frequently used so needs to be performant
 static void setPixel(int x, int y, Uint32 colour) {
     Uint32* pixels = (Uint32*)backBuffer->pixels;
-    if (y < 0 || y >= backBuffer->h) {
-    // Skip setting pixel if out of bounds
-        return;
-    }
     pixels[(y * backBuffer->w) + x] = colour;
 }
 
-static void drawColumn(int x, int wallHeight, int wallType, double xPosWithinTexture, int wallnum) { // implement draw textured column
-    int overheight = 0;
-    if (wallHeight > Settings::getScreenHeight()) { //stops crashing but need proper solution
-        overheight = (wallHeight - Settings::getScreenHeight() / 2);
-        //wallHeight = Settings::getScreenHeight();
-    }
-    if (wallHeight < 0) wallHeight = 0;
+static void drawColumn(int x, int wallHeight, int wallType, double xPosWithinTexture, int wallnum) {
 
     int screenHeight = Settings::getScreenHeight();
     int floorTop = (screenHeight-wallHeight) /2;
@@ -45,12 +35,9 @@ static void drawColumn(int x, int wallHeight, int wallType, double xPosWithinTex
     const std::vector<Uint32>& column = textures[wallnum]->getColumn(xPosWithinTexture);
     double pixel_gap = 100.0 / wallHeight;
 
-    int max_temp = 0;
-    if (overheight > 1) {
-        std::cout << "overheight" << std::endl;
-    }
-
-    for (int i=floorTop; i < wallTop; i++) { //this should be optimised, this loop is looping too wide a range
+    int bottom = std::max(floorTop, 0);
+    int top = std::min(wallTop, screenHeight);
+    for (int i=bottom; i < top; i++) {
         int temp = std::round((i-floorTop)*pixel_gap);//    also experiment with more "up" taller walls
         //setPixel(x, i, column[]);
         //if (temp >= 0 && temp < wallHeight) {
@@ -60,16 +47,6 @@ static void drawColumn(int x, int wallHeight, int wallType, double xPosWithinTex
         //std::cout << "2" << std::endl;
         //}
     }
-
-    //setPixel(x, xPosWithinTexture*100, 0xFFFF0000);
-    //
-    //        for (int x=0;x<100;x++) {
-    //        std::vector<Uint32> vect = text1->getColumn(static_cast<double>(x) / 100);
-    //        for (int y=0;y<100;y++) {
-    //            setPixel(x,y, vect[y]);
-    //        }
-    //    }
-    //
 
     for (int i=wallTop; i < screenHeight; i++) {
         setPixel(x, i, ceilingColour);
