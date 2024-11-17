@@ -1,6 +1,7 @@
 #include <iostream>
 //#include <cstdlib> // For system()
 #include <tuple>
+#include <cassert>
 
 #include <SDL.h>
 #include "renderer.h"
@@ -30,22 +31,20 @@ static void drawColumn(int x, int wallHeight, int wallType, double xPosWithinTex
     for (int i=0; i < floorTop; i++) {
         setPixel(x, i, floorColour);
     }
-    // draw
-    // copy or refrence/pointer????
+
     const std::vector<Uint32>& column = textures[wallnum]->getColumn(xPosWithinTexture);
     double pixel_gap = 100.0 / wallHeight;
 
-    int bottom = std::max(floorTop, 0);
-    int top = std::min(wallTop, screenHeight);
-    for (int i=bottom; i < top; i++) {
-        int temp = std::round((i-floorTop)*pixel_gap);//    also experiment with more "up" taller walls
-        //setPixel(x, i, column[]);
-        //if (temp >= 0 && temp < wallHeight) {
-
-        //std::cout << "1" << std::endl;
-        setPixel(x, i, column[temp]);
-        //std::cout << "2" << std::endl;
-        //}
+    int top = std::max(floorTop, 0);
+    int bottom = std::min(wallTop, screenHeight);
+    for (int i=top; i < bottom; i++) {
+        int textureY = std::round((i-floorTop)*pixel_gap);//    also experiment with more "up" taller walls
+        
+        assert(textureY >= 0);
+        if (textureY >= static_cast<int>(column.size())) {// clamp textureY to within the texture
+            textureY = static_cast<int>(column.size() - 1);
+        }
+        setPixel(x, i, column[textureY]);
     }
 
     for (int i=wallTop; i < screenHeight; i++) {
