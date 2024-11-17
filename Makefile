@@ -1,6 +1,6 @@
 # Compiler settings
 CC = g++
-CFLAGS = -Wall -Wextra -std=c++17 -O3 -Iinclude `sdl2-config --cflags`
+CFLAGS = -Wall -Wextra -std=c++23 -O3 -Iinclude `sdl2-config --cflags`
 #-fsanitize=address -g          for memory checking
 #-DNDEBUG                       for asserts
 LDFLAGS = -lSDL2_image `sdl2-config --libs`

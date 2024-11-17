@@ -32,7 +32,7 @@ static void drawColumn(int x, int wallHeight, int wallType, double xPosWithinTex
         setPixel(x, i, floorColour);
     }
 
-    const std::vector<Uint32>& column = textures[wallnum]->getColumn(xPosWithinTexture);
+    const std::vector<Uint32>& column = wallTextures[wallnum]->getColumn(xPosWithinTexture);
     double pixel_gap = 100.0 / wallHeight;
 
     int top = std::max(floorTop, 0);

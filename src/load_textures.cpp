@@ -14,7 +14,17 @@ Texture::Texture(SDL_Surface* surface) {
 
     for (int x=0; x<width; x++) {
         for (int y=0; y<height; y++) {
-            Uint32* pixel = (Uint32*)surface->pixels + y * surface->pitch / 4 + x; // i hope this correctly parses the 1d array
+            Uint32* pixel = (Uint32*)surface->pixels + y * surface->pitch / 4 + x; // fix rotated textures
+
+            // TEMP HACK TO FIX COLOURS
+            Uint32 colour = *pixel;
+            Uint8 red = (colour >> 0) & 0xFF;
+            Uint8 blue = (colour >> 16) & 0xFF;
+            // Swap red and blue components
+            colour = (colour & 0xFF00FF00) | (blue << 0) | (red << 16);
+            *pixel = colour;
+            // ENDHACK
+
             pixelData[y][x] = *pixel;
         }
     }
@@ -31,17 +41,17 @@ Uint32 Texture::test_getPixel(int x, int y) {
     return pixelData[y][x];
 }
 
-static const int number_of_textures = 3;
-Texture* textures[number_of_textures];
-// load textures
+static const int numberOfTextures = 5;
+Texture* wallTextures[numberOfTextures];
+
 void load_textures() {
     
-    const std::string texture_locations[number_of_textures] = {"metalgrate1.png", "brickwall1.png", "rusty1.png"};
+    const std::string wall_texture_locations[numberOfTextures] = {"metalgrate1.png", "brickwall1.png", "rusty1.png", "test_character.png", "rgb_test.png"};
     
 
-    for (int i=0; i<number_of_textures; i++) {
-        std::string filename = "textures/" + texture_locations[i];
-        SDL_Surface* surface = IMG_Load(filename.c_str());
+    for (int i=0; i<numberOfTextures; i++) {
+        std::string filename = "textures/" + wall_texture_locations[i];
+        SDL_Surface* surface = IMG_Load(filename.c_str()); // Stop using IMG_Load use custom code, only need to support png and can drop sdl image dependency
         if (!surface) {
             throw std::ios_base::failure("Image load error: " + filename);
         }
@@ -65,7 +75,7 @@ void load_textures() {
                     << SDL_GetPixelFormatName(surface->format->format) << std::endl;
         }
         
-        textures[i] = new Texture(surface);
+        wallTextures[i] = new Texture(surface);
         SDL_FreeSurface(surface);
         //SDL_FreeSurface(in_correct_format);
     }
