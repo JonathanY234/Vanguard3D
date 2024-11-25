@@ -7,8 +7,12 @@
 //temp
 #include <iostream>
 
-Player::Player(double x, double y, double rotation, double size)
+Sprite::Sprite(double x, double y, double rotation, double size)
     : positionX(x), positionY(y), rotation(rotation), size(size) {}
+
+Player::Player(double x, double y, double rotation, double size)
+    : Sprite(x, y, rotation, size) {}
+    
 
 std::tuple<double, double> Player::getPosition() {
     return std::make_tuple(positionX, positionY);

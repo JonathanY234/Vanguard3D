@@ -6,7 +6,6 @@
 // maybe do texture loading concurrently to improve load times?
 
 
-//Texture implementation
 Texture::Texture(SDL_Surface* surface) {
     width = surface->w;
     height = surface->h;
@@ -41,15 +40,17 @@ Uint32 Texture::test_getPixel(int x, int y) {
     return pixelData[y][x];
 }
 
-static const int numberOfTextures = 5;
-Texture* wallTextures[numberOfTextures];
+static const int numberOfWallTextures = 4;
+Texture* wallTextures[numberOfWallTextures];
+
+static const int numberOfSpriteTextures = 1;
+Texture* spriteTextures[numberOfSpriteTextures];
 
 void load_textures() {
     
-    const std::string wall_texture_locations[numberOfTextures] = {"metalgrate1.png", "brickwall1.png", "rusty1.png", "test_character.png", "rgb_test.png"};
-    
+    const std::string wall_texture_locations[numberOfWallTextures] = {"metalgrate1.png", "brickwall1.png", "rusty1.png", "rgb_test.png"};
 
-    for (int i=0; i<numberOfTextures; i++) {
+    for (int i=0; i<numberOfWallTextures; i++) {
         std::string filename = "textures/" + wall_texture_locations[i];
         SDL_Surface* surface = IMG_Load(filename.c_str()); // Stop using IMG_Load use custom code, only need to support png and can drop sdl image dependency
         if (!surface) {
@@ -64,20 +65,35 @@ void load_textures() {
             return;  // Return or handle the error as necessary
         }
 
-        SDL_FreeSurface(surface);
-        surface = in_correct_format;
-
-        if (surface->format->format != SDL_PIXELFORMAT_RGBA32) {
-            std::cerr << "Warning: The image is using an unexpected pixel format: " 
-                    << SDL_GetPixelFormatName(surface->format->format) << std::endl;
-        } else {
-            std::cerr << "Looks like RGBA to me: " 
-                    << SDL_GetPixelFormatName(surface->format->format) << std::endl;
-        }
         
-        wallTextures[i] = new Texture(surface);
+        wallTextures[i] = new Texture(in_correct_format);
+        SDL_FreeSurface(in_correct_format);
         SDL_FreeSurface(surface);
-        //SDL_FreeSurface(in_correct_format);
+
+    }
+    
+    const std::string spriteTextureLocations[numberOfSpriteTextures] = {"test_character.png"};
+
+    for (int i=0; i<numberOfSpriteTextures; i++) {
+        std::string filename = "textures/" + wall_texture_locations[i];
+        SDL_Surface* surface = IMG_Load(filename.c_str()); // Stop using IMG_Load use custom code, only need to support png and can drop sdl image dependency
+        if (!surface) {
+            throw std::ios_base::failure("Image load error: " + filename);
+        }
+        // Log if the pixel format is wrong
+        //SDL_PixelFormatEnum format = surface->format->format;
+        SDL_Surface* in_correct_format = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA32, 0);
+
+        if (!in_correct_format) {
+            std::cerr << "Error: Failed to convert surface format!" << std::endl;
+            return;  // Return or handle the error as necessary
+        }
+
+        
+        wallTextures[i] = new Texture(in_correct_format);
+        SDL_FreeSurface(in_correct_format);
+        SDL_FreeSurface(surface);
+
     }
 }
 // note: we are should probably clean up the texture data on program close

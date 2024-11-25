@@ -1,13 +1,17 @@
 #ifndef GAME_H
 #define GAME_H
 
-class Player {
-private:
+class Sprite {
+protected:
     double positionX;
     double positionY;
     double rotation;
     double size;
-    //void pushOutOfWalls(double directionX, double directionY);
+public:
+    Sprite(double x, double y, double rotation, double size);
+};
+class Player : public Sprite {
+private:
     bool isPlayerCollidingWall(double playerX, double playerY);
 public:
     Player(double x, double y, double rotation, double size);
