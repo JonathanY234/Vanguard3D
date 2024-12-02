@@ -1,8 +1,9 @@
 #include <cmath>
 #include <tuple>
-#include <cmath> // for std::trunc
+#include <vector>
 #include "level.h"
 #include "settings.h"
+#include "game.h"
 
 //temp
 #include <iostream>
@@ -20,10 +21,10 @@ static constexpr int level[17][17] = {
     {1,0,0,0,0,1,0,0,0,0,0,2,0,0,0,0,2},
     {1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,2},
     {1,0,0,0,0,1,0,0,0,0,0,2,0,0,0,0,2},
-    {1,0,0,0,0,1,0,0,0,0,0,2,0,0,0,0,2},
+    {1,0,0,0,0,1,0,0,-1,0,0,2,0,0,0,0,2},
     {1,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,2},
     {1,0,0,0,0,1,0,0,0,0,0,2,0,0,0,0,2},
-    {1,0,0,0,0,1,0,0,0,0,0,2,0,0,0,0,2},
+    {1,0,0,0,0,1,0,0,-1,0,0,2,0,0,0,0,2},
     {1,1,1,1,1,0,0,0,0,0,0,0,2,2,2,2,2},
     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
     {1,1,1,0,1,1,0,3,1,0,1,1,0,1,1,1,1},
@@ -35,13 +36,12 @@ static constexpr int levelSizeX = sizeof(level[0])/sizeof(level[0][0]);
 static constexpr int levelSizeY = sizeof(level) / sizeof(level[0]);
 
 bool isWall(int x, int y) {
-    // when double is passed it is trunkated to int
-    if (x < 0 || y < 0 || x >= levelSizeX || y >= levelSizeY) {
-        return true;
-    }
-    return level[x][y];
-    // any non-zero value is treated as true
-    // if I add new types of walls this may needs to be modified
+    // when double is passed it is truncated to int
+
+    //if (x < 0 || y < 0 || x >= levelSizeX || y >= levelSizeY) { // not used because we enforce areas surrounded by walls
+    //    return true;
+    //}
+    return level[x][y] > 0;
 }
 std::tuple<double, int, double, int> raycast(double rayStartX, double rayStartY, double angle) {
     
@@ -123,8 +123,16 @@ std::tuple<double, int, double, int> raycast(double rayStartX, double rayStartY,
 
         xPosWithinTexture = test - std::floor(test);
     }
-
-
     
     return std::make_tuple(perpWallDist, side, xPosWithinTexture, level[mapX][mapY]);
+}
+
+void getSprites(std::vector<Sprite>& sprites) {
+    for (int y=0; y<levelSizeY; y++) {
+        for (int x=0; x<levelSizeX; x++) {
+            if (level[x][y] < 0) {
+                sprites.push_back(Sprite(x,y,0, 0.35,level[x][y]));
+            }
+        }
+    }
 }

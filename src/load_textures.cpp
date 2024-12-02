@@ -33,7 +33,7 @@ std::vector<Uint32> Texture::getColumn(double xPosWithinTexture) const {
     int test = (int)(xPosWithinTexture*100);
 
 
-    std::vector<Uint32> img_column = pixelData[test];
+    std::vector<Uint32> img_column = pixelData[test];// TODO: use dynamic arrays instead
     return img_column;
 }
 Uint32 Texture::test_getPixel(int x, int y) {
@@ -43,10 +43,10 @@ Uint32 Texture::test_getPixel(int x, int y) {
 static const int numberOfWallTextures = 4;
 Texture* wallTextures[numberOfWallTextures];
 
-static const int numberOfSpriteTextures = 1;
+static const int numberOfSpriteTextures = 2;
 Texture* spriteTextures[numberOfSpriteTextures];
 
-void load_textures() {
+void loadTextures() {
     
     const std::string wall_texture_locations[numberOfWallTextures] = {"metalgrate1.png", "brickwall1.png", "rusty1.png", "rgb_test.png"};
 
@@ -72,7 +72,7 @@ void load_textures() {
 
     }
     
-    const std::string spriteTextureLocations[numberOfSpriteTextures] = {"test_character.png"};
+    const std::string spriteTextureLocations[numberOfSpriteTextures] = {"test_character.png", "test_character.png"};
 
     for (int i=0; i<numberOfSpriteTextures; i++) {
         std::string filename = "textures/" + wall_texture_locations[i];

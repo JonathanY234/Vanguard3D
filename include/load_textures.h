@@ -14,6 +14,7 @@ public:
     Uint32 test_getPixel(int x, int y);
 };
 extern Texture* wallTextures[];
-void load_textures();
+extern Texture* spriteTextures[];
+void loadTextures();
 
 #endif // LOAD_TEXTURES_H

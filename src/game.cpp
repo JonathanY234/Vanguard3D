@@ -7,16 +7,20 @@
 //temp
 #include <iostream>
 
-Sprite::Sprite(double x, double y, double rotation, double size)
-    : positionX(x), positionY(y), rotation(rotation), size(size) {}
+Sprite::Sprite(double x, double y, double rotation, double size, int spriteType)
+    : positionX(x), positionY(y), rotation(rotation), size(size), spriteType(spriteType) {}
 
-Player::Player(double x, double y, double rotation, double size)
-    : Sprite(x, y, rotation, size) {}
-    
-
-std::tuple<double, double> Player::getPosition() {
+double Sprite::getDistanceFrom(double x, double y) {
+    return sqrt((x-positionX)*(x-positionX) + (y-positionY)*(y-positionY));
+}
+std::tuple<double, double> Sprite::getPosition() {
     return std::make_tuple(positionX, positionY);
 }
+
+Player::Player(double x, double y, double rotation, double size)
+    : Sprite(x, y, rotation, size, 0) {}
+    
+
 double Player::getRotation() {
     return rotation;
 }

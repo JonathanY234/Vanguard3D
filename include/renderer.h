@@ -8,6 +8,7 @@
 // Declare the backBuffer globally so other files can use it
 extern SDL_Surface* backBuffer;
 
+void initialiseSprites();
 void drawFrame(double positionX, double positionY, double rotation);
 
 #endif

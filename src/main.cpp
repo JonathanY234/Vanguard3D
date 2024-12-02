@@ -6,8 +6,8 @@
 #include "renderer.h"
 #include "game.h"
 
-//texture test
 #include "load_textures.h"
+#include "level.h"
 
 //static void setPixel(int x, int y, Uint32 colour) {
 //    Uint32* pixels = (Uint32*)backBuffer->pixels;
@@ -20,9 +20,8 @@ SDL_Surface* backBuffer = nullptr;
 
 
 int main() {
-    //texture test
-    load_textures();
-    
+    loadTextures();
+    initialiseSprites();
 
     // data for frame rate cap
     Uint32 currentFrameStart;
