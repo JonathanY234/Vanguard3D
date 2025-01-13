@@ -23,16 +23,7 @@ int main() {
     loadTextures();
     initialiseSprites();
 
-    // data for frame rate cap
-    Uint32 currentFrameStart;
-    double actualFrameTime;
 
-    // data for deltaTime
-    double deltaTime;
-    Uint32 previousFrameStart = SDL_GetTicks();
-    //fps counter
-    //int frameCount = 0;
-    //float fps = 0;
 
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -68,22 +59,21 @@ int main() {
     }
 
     // make the player object
-    std::shared_ptr<Player> firstPlayer = std::make_shared<Player>(0.5, 0.5, 0.4, 0.35);
+    std::shared_ptr<Player> firstPlayer = std::make_shared<Player>(0.5, 0.5, 0.0, 0.35);
     // ooh fancy smart pointer
 
     //mouselook stuff
     SDL_SetRelativeMouseMode(SDL_TRUE);
-    int mouseDeltaX;
 
     // Main loop to keep the window open
     bool running = true;
     SDL_Event event;
-    const Uint8* keyboardState;
-
+    
+    Uint32 previousFrameStart = SDL_GetTicks();
     while (running) {
         // get deltatime and frame limiter
-        currentFrameStart = SDL_GetTicks();
-        deltaTime = (currentFrameStart - previousFrameStart) / 1000.0; // convert to seconds
+        Uint32 currentFrameStart = SDL_GetTicks();
+        double deltaTime = (currentFrameStart - previousFrameStart) / 1000.0; // convert to seconds
         previousFrameStart = currentFrameStart;
 
         // Handle events
@@ -98,10 +88,11 @@ int main() {
             }
         }
         // Get the current state of the keyboard
-        keyboardState = SDL_GetKeyboardState(NULL);
+        const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
         // Check for specific keys
 
         // mouse look
+        int mouseDeltaX;
         SDL_GetRelativeMouseState(&mouseDeltaX, nullptr);
         firstPlayer->turn(mouseDeltaX * 0.004);
         // arrow keys look
@@ -135,21 +126,6 @@ int main() {
         auto [x, y] = firstPlayer->getPosition();
         drawFrame(x, y, firstPlayer->getRotation());
 
-        //Texture test
-        //Texture* text1 = textures[1];
-        //for (int x=0;x<100;x++) {
-        //    for (int y=0;y<100;y++) {
-        //        setPixel(x,y, text1->test_getPixel(x,y));
-        //    }
-        //}
-        //for (int x=0;x<100;x++) {
-        //    std::vector<Uint32> vect = text1->getColumn(static_cast<double>(x) / 100);
-        //    for (int y=0;y<100;y++) {
-        //        setPixel(x,y, vect[y]);
-        //    }
-        //}
-        //end texture test
-
         // Copy back buffer to the front buffer
         // swap pointers for efficienct double buffering
         SDL_Surface* temp = frontBuffer;
@@ -160,7 +136,7 @@ int main() {
         SDL_UpdateWindowSurface(window);
 
 
-        actualFrameTime = SDL_GetTicks() - currentFrameStart; // Calculate how long the frame took
+        double actualFrameTime = SDL_GetTicks() - currentFrameStart; // Calculate how long the frame took
 
         // Update FPS every 100 frames
         //frameCount++;

@@ -87,7 +87,7 @@ void Player::move(double forwardAmount, double sidewaysAmount) {
     
 }
 bool Player::isPlayerCollidingWall(double playerX, double playerY) {
-    // swastica pattern, check four corners
+    // check players four corners
     return (isWall(playerX + size, playerY + size) || 
             isWall(playerX - size, playerY - size) || 
             isWall(playerX - size, playerY + size) || 
@@ -96,5 +96,5 @@ bool Player::isPlayerCollidingWall(double playerX, double playerY) {
 
 void Player::turn(double amount) {
     rotation += amount;
-    //probably dont need to normalise value between 0-2PI
+    rotation = fmod(rotation + 2 * M_PI, 2 * M_PI);
 }

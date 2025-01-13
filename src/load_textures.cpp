@@ -75,7 +75,7 @@ void loadTextures() {
     const std::string spriteTextureLocations[numberOfSpriteTextures] = {"test_character.png", "test_character.png"};
 
     for (int i=0; i<numberOfSpriteTextures; i++) {
-        std::string filename = "textures/" + wall_texture_locations[i];
+        std::string filename = "textures/" + spriteTextureLocations[i];
         SDL_Surface* surface = IMG_Load(filename.c_str()); // Stop using IMG_Load use custom code, only need to support png and can drop sdl image dependency
         if (!surface) {
             throw std::ios_base::failure("Image load error: " + filename);
@@ -90,11 +90,14 @@ void loadTextures() {
         }
 
         
-        wallTextures[i] = new Texture(in_correct_format);
+        spriteTextures[i] = new Texture(in_correct_format);
         SDL_FreeSurface(in_correct_format);
         SDL_FreeSurface(surface);
 
     }
+    //std::cout << spriteTextures[0] << std::endl;
+    //std::cout << spriteTextures[1] << std::endl;
+    //spriteTextures[spriteNum]->getColumn(xPosWithinTexture);
 }
 // note: we are should probably clean up the texture data on program close
 //void removeTextures() {}
