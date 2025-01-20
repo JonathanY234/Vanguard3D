@@ -8,6 +8,6 @@ bool isWall(int x, int y);
 
 #include <vector>
 class Sprite;
-void getSprites(std::vector<Sprite>& sprites);
+void getSprites(std::vector<Sprite*>& sprites);
 
 #endif

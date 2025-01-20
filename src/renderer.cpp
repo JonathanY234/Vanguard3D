@@ -1,6 +1,5 @@
 #include <iostream>// doubt this is needed
 #include <print>
-//#include <cstdlib> // For system()
 #include <tuple>
 #include <cassert>
 #include <cmath>
@@ -14,9 +13,9 @@
 static Uint32 floorColour = 0xFF606060;
 static Uint32 ceilingColour = 0xFF404040;
 
-static std::vector<Sprite> sprites;
+static std::vector<Sprite*> sprites;// destructor not implemented
 void initialiseSprites() {
-    getSprites(sprites);
+    getSprites(sprites);// from level
     //for (int val : sprites) {
     //    std::cout << val << " ";
     //}
@@ -111,7 +110,7 @@ void drawSpriteColumn(int x, int spriteHeight, double xPosWithinTexture, int spr
         setPixel(x, i, column[textureY]);
     }
 }
-void drawSprite(Sprite sprite, int spriteCenterScreenColumn, int spriteScreenSize, double* rayLengths, double spriteCameraDistance) {
+void drawSprite(Sprite* sprite, int spriteCenterScreenColumn, int spriteScreenSize, double* rayLengths, double spriteCameraDistance) {
     int temp = spriteScreenSize / 3;// dont use this magic value finalise
 
     double xPosWithinTexture = 0;
@@ -120,11 +119,11 @@ void drawSprite(Sprite sprite, int spriteCenterScreenColumn, int spriteScreenSiz
         int where = spriteCenterScreenColumn+i;
         if (where >= 0 && where < Settings::getScreenWidth()) {//avoid drawing sprites off screen
 
-            std::cout << "spriteCameraDistance " << spriteCameraDistance << " rayLengths[i+temp] " << rayLengths[i+temp] << std::endl;
-            std::cout << "i+temp " << i+temp << std::endl;
-            std::cout << "comparison" << (spriteCameraDistance < rayLengths[i+temp]) << std::endl;
+            //std::cout << "spriteCameraDistance " << spriteCameraDistance << " rayLengths[i+temp] " << rayLengths[i+temp] << std::endl;
+            //std::cout << "i+temp " << i+temp << std::endl;
+            //std::cout << "comparison" << (spriteCameraDistance < rayLengths[i+temp]) << std::endl;
             if (spriteCameraDistance < rayLengths[spriteCenterScreenColumn+i]) {
-                drawSpriteColumn(spriteCenterScreenColumn+i, spriteScreenSize, xPosWithinTexture, 0);
+                drawSpriteColumn(spriteCenterScreenColumn+i, spriteScreenSize, xPosWithinTexture, 0);//still not actually picking the correct sprite texture
             }
         }
         xPosWithinTexture = xPosWithinTexture + (1.0 / spriteScreenSize);
@@ -164,11 +163,18 @@ void drawFrame(double positionX, double positionY, double rotation) {
 
         drawColumn(i, wallHeight, xPosWithinTexture, wallnum);
     }
+    // Sort sprites by distance so they render correctly
+    std::sort(sprites.begin(), sprites.end(), [positionX, positionY](const Sprite* a, const Sprite* b) {
+        return a->getSquaredDistanceFrom(positionX, positionY) >
+            b->getSquaredDistanceFrom(positionX, positionY);
+    });
+
+
     // Draw Sprites
-    for (Sprite sprite : sprites) {//need to later do this sorted by distance
-        double spriteDistance = sprite.getDistanceFrom(positionX, positionY);
+    for (Sprite* sprite : sprites) {//need to later do this sorted by distance
+        double spriteDistance = sprite->getDistanceFrom(positionX, positionY);
         int spriteScreenSize = (int)(1.5 * Settings::getScreenHeight() / spriteDistance);
-        double spriteAngle = rotation - calculateBearing(positionX,positionY,sprite.getPosition());
+        double spriteAngle = rotation - calculateBearing(positionX,positionY,sprite->getPosition());
         //std::cout << "player rotation " << rotation*(180/M_PI) << std::endl;
         //std::cout << "enemy bearing " << calcB*(180/M_PI) << std::endl;
         //std::cout << "spriteAngle " << spriteAngle*(180/M_PI) << std::endl;

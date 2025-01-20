@@ -16,12 +16,12 @@ static constexpr int level[17][17] = {
     {1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2},
     {1,0,0,0,0,1,0,0,0,0,0,2,0,0,0,0,2},
     {1,0,0,0,0,1,0,0,0,0,0,2,0,0,0,0,2},
-    {1,0,-1,0,0,0,0,0,0,0,0,2,0,0,0,0,2},
+    {1,0,-1,0,0,0,0,-1,0,0,0,2,0,0,0,0,2},
     {1,0,0,0,0,1,0,0,0,0,0,2,0,0,0,0,2},
     {1,0,0,0,0,1,0,0,0,0,0,2,0,0,0,0,2},
     {1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,2},
     {1,0,0,0,0,1,0,0,0,0,0,2,0,0,0,0,2},
-    {1,0,0,0,0,1,0,0,0,0,0,2,0,0,0,0,2},
+    {1,0,0,0,0,1,0,0,-1,0,0,2,0,0,0,0,2},
     {1,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,2},
     {1,0,0,0,0,1,0,0,0,0,0,2,0,0,0,0,2},
     {1,0,0,0,0,1,0,0,0,0,0,2,0,0,0,0,2},
@@ -66,7 +66,7 @@ std::tuple<double, int, double, int> raycast(double rayStartX, double rayStartY,
     int stepY;
 
     int hit = 0; //was there a wall hit?
-    int side; //was a NS or a EW wall hit?
+    int side; //was a NS or a EW wall hit? // we are not using side anymore Remove??
 
     //calculate step and initial sideDist
     if(rayDirX < 0) {
@@ -127,11 +127,11 @@ std::tuple<double, int, double, int> raycast(double rayStartX, double rayStartY,
     return std::make_tuple(perpWallDist, side, xPosWithinTexture, level[mapX][mapY]);
 }
 
-void getSprites(std::vector<Sprite>& sprites) {
+void getSprites(std::vector<Sprite*>& sprites) {
     for (int y=0; y<levelSizeY; y++) {
         for (int x=0; x<levelSizeX; x++) {
             if (level[x][y] < 0) {
-                sprites.push_back(Sprite(x,y,0, 0.35,level[x][y]));
+                sprites.push_back(new Sprite(x,y,0, 0.35,level[x][y]));
             }
         }
     }

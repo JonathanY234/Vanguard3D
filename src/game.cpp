@@ -10,10 +10,13 @@
 Sprite::Sprite(double x, double y, double rotation, double size, int spriteType)
     : positionX(x), positionY(y), rotation(rotation), size(size), spriteType(spriteType) {}
 
-double Sprite::getDistanceFrom(double x, double y) {
+double Sprite::getDistanceFrom(double x, double y) const {
     return sqrt((x-positionX)*(x-positionX) + (y-positionY)*(y-positionY));
 }
-std::tuple<double, double> Sprite::getPosition() {
+double Sprite::getSquaredDistanceFrom(double x, double y) const {
+    return (x-positionX)*(x-positionX) + (y-positionY)*(y-positionY);
+}
+std::tuple<double, double> Sprite::getPosition() const {
     return std::make_tuple(positionX, positionY);
 }
 
@@ -21,7 +24,7 @@ Player::Player(double x, double y, double rotation, double size)
     : Sprite(x, y, rotation, size, 0) {}
     
 
-double Player::getRotation() {
+double Player::getRotation() const {
     return rotation;
 }
 void Player::move(double forwardAmount, double sidewaysAmount) {

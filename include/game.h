@@ -10,15 +10,16 @@ protected:
     int spriteType;
 public:
     Sprite(double x, double y, double rotation, double size, int spriteType);
-    double getDistanceFrom(double x, double y);
-    std::tuple<double, double> getPosition();
+    double getDistanceFrom(double x, double y) const;
+    double getSquaredDistanceFrom(double x, double y) const;
+    std::tuple<double, double> getPosition() const;
 };
 class Player : public Sprite {
 private:
     bool isPlayerCollidingWall(double playerX, double playerY);
 public:
     Player(double x, double y, double rotation, double size);
-    double getRotation();
+    double getRotation() const;
     void move(double forwardAmount, double sidewaysAmount);
     //void moveSideways(double amount);
     void turn(double amount);
