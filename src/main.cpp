@@ -9,21 +9,12 @@
 #include "load_textures.h"
 #include "level.h"
 
-//static void setPixel(int x, int y, Uint32 colour) {
-//    Uint32* pixels = (Uint32*)backBuffer->pixels;
-//    pixels[(y * backBuffer->w) + x] = colour;
-//}
-
-
 // Define the global backBuffer
 SDL_Surface* backBuffer = nullptr;
-
 
 int main() {
     loadTextures();
     initialiseSprites();
-
-
 
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {

@@ -1,4 +1,3 @@
-#include <iostream>// doubt this is needed
 #include <print>
 #include <tuple>
 #include <cassert>
@@ -110,7 +109,7 @@ void drawSpriteColumn(int x, int spriteHeight, double xPosWithinTexture, int spr
         setPixel(x, i, column[textureY]);
     }
 }
-void drawSprite(Sprite* sprite, int spriteCenterScreenColumn, int spriteScreenSize, double* rayLengths, double spriteCameraDistance) {
+void drawSprite(Sprite* sprite, int spriteCenterScreenColumn, int spriteScreenSize, double* rayLengths, double spriteDistance) {
     int temp = spriteScreenSize / 3;// dont use this magic value finalise
 
     double xPosWithinTexture = 0;
@@ -122,8 +121,8 @@ void drawSprite(Sprite* sprite, int spriteCenterScreenColumn, int spriteScreenSi
             //std::cout << "spriteCameraDistance " << spriteCameraDistance << " rayLengths[i+temp] " << rayLengths[i+temp] << std::endl;
             //std::cout << "i+temp " << i+temp << std::endl;
             //std::cout << "comparison" << (spriteCameraDistance < rayLengths[i+temp]) << std::endl;
-            if (spriteCameraDistance < rayLengths[spriteCenterScreenColumn+i]) {
-                drawSpriteColumn(spriteCenterScreenColumn+i, spriteScreenSize, xPosWithinTexture, 0);//still not actually picking the correct sprite texture
+            if (spriteDistance < rayLengths[spriteCenterScreenColumn+i]) {
+                drawSpriteColumn(spriteCenterScreenColumn+i, spriteScreenSize, xPosWithinTexture, 0);//still not actually picking the correct sprite texturev
             }
         }
         xPosWithinTexture = xPosWithinTexture + (1.0 / spriteScreenSize);
@@ -140,22 +139,36 @@ double calculateBearing(double x1,double y1, std::tuple<double, double> point2) 
     double bearing = (atan2(deltaX, deltaY) - M_PI_2) * -1;
     return fmod(bearing + 2 * M_PI, 2 * M_PI);
 }
+//isInViewFrustum(positionX, positionY, rotation, spriteCenterScreenColumn, sprite, spriteDistance)) {
+bool isInViewFrustum(double playerX, double playerY, double playerRotation, int spriteCenterScreenColumn, Sprite* sprite, int spriteScreenSize) {
+    // Test if this actually helps performance
+
+    int temp = spriteScreenSize / 3;// dont use this magic value finalise
+
+    double spriteCenterBearing = calculateBearing(playerX, playerY, sprite->getPosition());
+    // is more left or right of player view
+    if (spriteCenterBearing > playerRotation) {// it doesnt seem completely acurate but still good enough I dont know why
+        return spriteCenterScreenColumn - temp < Settings::getScreenWidth();
+    } else {
+        return spriteCenterScreenColumn + temp > 0;
+    }
+}
 
 void drawFrame(double positionX, double positionY, double rotation) {
 
     int sWidth = Settings::getScreenWidth();
-    double rayLengths[sWidth];  //very naughty VLA
+    double rayLengths[sWidth];// very naughty VLA
 
     // raycast the whole screen and draw walls
     double degreesPerPixel = Settings::getFov() / Settings::getScreenWidth();
-    double raycastAngle = rotation - (Settings::getFov()/2); // starting value for leftmost column
+    double raycastAngle = rotation - (Settings::getFov()/2);// starting value for leftmost column
     for (int i=0; i < Settings::getScreenWidth(); i++) {
 
         auto [distance, side, xPosWithinTexture, wallnum] = raycast(positionX, positionY, raycastAngle);
 
         rayLengths[i] = distance;// store for later sprite drawing
         
-        distance = distance * cos(raycastAngle - rotation); // fish eye effect corrections
+        distance = distance * cos(raycastAngle - rotation);// fish eye effect corrections
 
         int wallHeight = (int)(1.5 * Settings::getScreenHeight() / distance);
  
@@ -166,7 +179,7 @@ void drawFrame(double positionX, double positionY, double rotation) {
     // Sort sprites by distance so they render correctly
     std::sort(sprites.begin(), sprites.end(), [positionX, positionY](const Sprite* a, const Sprite* b) {
         return a->getSquaredDistanceFrom(positionX, positionY) >
-            b->getSquaredDistanceFrom(positionX, positionY);
+                b->getSquaredDistanceFrom(positionX, positionY);
     });
 
 
@@ -179,13 +192,14 @@ void drawFrame(double positionX, double positionY, double rotation) {
         //std::cout << "enemy bearing " << calcB*(180/M_PI) << std::endl;
         //std::cout << "spriteAngle " << spriteAngle*(180/M_PI) << std::endl;
 
-        int spriteCenterScreenColumn = (Settings::getScreenWidth() /2) - (spriteAngle / degreesPerPixel);
-        //std::cout << "spriteCenterScreenColumn " << spriteCenterScreenColumn << std::endl;
-        if (spriteCenterScreenColumn > -30 && spriteCenterScreenColumn < Settings::getScreenWidth() - 30) {// this is a VERY bad attempt at frustum culling
-            drawSprite(sprite, spriteCenterScreenColumn, spriteScreenSize, rayLengths, spriteDistance);
+        //isInViewFrustum(positionX, positionY, rotation, sprite, spriteDistance);
 
-            make_dot(spriteCenterScreenColumn);
+        int spriteCenterScreenColumn = (Settings::getScreenWidth() /2) - (spriteAngle / degreesPerPixel);
+
+        if (isInViewFrustum(positionX, positionY, rotation, spriteCenterScreenColumn, sprite, spriteScreenSize)) {
+            drawSprite(sprite, spriteCenterScreenColumn, spriteScreenSize, rayLengths, spriteDistance);
         }
+        //make_dot(spriteCenterScreenColumn);
         
     }
     //crosshair
