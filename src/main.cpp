@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <iostream>
+#include <print>
 #include <tuple>
 
 #include "settings.h"
@@ -60,7 +61,11 @@ int main() {
     bool running = true;
     SDL_Event event;
     
+    // frame timing and cap stuff
     Uint32 previousFrameStart = SDL_GetTicks();
+    Uint32 frameRateTestStart = SDL_GetTicks();
+    int frameCount = 0;
+
     while (running) {
         // get deltatime and frame limiter
         Uint32 currentFrameStart = SDL_GetTicks();
@@ -126,22 +131,27 @@ int main() {
         // Update the window surface to display the front buffer
         SDL_UpdateWindowSurface(window);
 
-
+        //should be improved with SDL_GetPerformanceCounter() for more accuracy to avoid the 62 fps problem
         double actualFrameTime = SDL_GetTicks() - currentFrameStart; // Calculate how long the frame took
-
-        // Update FPS every 100 frames
-        //frameCount++;
-        //if (frameCount == 100) {
-        //    fps = 1000.0f / (double)actualFrameTime;  // Calculate FPS (time for 1 frame in milliseconds)
-        //    std::cout << "FPS: " << fps << std::endl;
-        //    frameCount = 0;  // Reset the frame count after printing FPS
-        //}
-
-        
         // Delay to maintain target FPS
         if (actualFrameTime < Settings::getFrameTime()) {
             SDL_Delay(Settings::getFrameTime() - actualFrameTime);
+        }        
+
+        // Print FPS every x frames
+        frameCount++;
+        int n = 100;
+        if (frameCount == n) {
+            double avgFrameTime = static_cast<double>(SDL_GetTicks() - frameRateTestStart) / n;
+            double avgFrameRate = 1000.0 / avgFrameTime;
+            std::println("{}", avgFrameTime);
+            std::println("{} {}", "avg FPS:", avgFrameRate);
+
+            frameCount = 0;
+            frameRateTestStart = SDL_GetTicks();
         }
+    
+ 
     }
 
     // Clean up

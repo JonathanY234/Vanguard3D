@@ -2,8 +2,10 @@
 #include <cmath>
 
 
-int Settings::screenHeight = 800;// idea: allow running at low res and scaling
+int Settings::screenHeight = 900;// idea: allow running at low res and scaling
 int Settings::screenWidth = 1800;
+//int Settings::screenHeight = 200;
+//int Settings::screenWidth = 300;
 int Settings::fps = 60; // could set this value based on sdl functions to get refresh rate
 double Settings::fov = 60;
 // add fov adjustions for aspect ratio

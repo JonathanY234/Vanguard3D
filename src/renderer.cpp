@@ -15,18 +15,15 @@ static Uint32 ceilingColour = 0xFF404040;
 static std::vector<Sprite*> sprites;// destructor not implemented
 void initialiseSprites() {
     getSprites(sprites);// from level
-    //for (int val : sprites) {
-    //    std::cout << val << " ";
-    //}
 }
 
 
 // function to set the colour of the screen, no bounds checking, uses the global backbuffer
 // frequently used so needs to be performant
-static void setPixel(int x, int y, Uint32 colour) {
+static inline void setPixel(int x, int y, Uint32 colour) {
     Uint32* pixels = (Uint32*)backBuffer->pixels;
     pixels[(y * backBuffer->w) + x] = colour;
-} //make a super optimised row drawing setPixel
+} //make a super optimised column drawing setPixel
 
 //temp
 void make_dot(int x) {
