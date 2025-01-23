@@ -138,7 +138,7 @@ double calculateBearing(double x1,double y1, std::tuple<double, double> point2) 
 }
 //isInViewFrustum(positionX, positionY, rotation, spriteCenterScreenColumn, sprite, spriteDistance)) {
 bool isInViewFrustum(double playerX, double playerY, double playerRotation, int spriteCenterScreenColumn, Sprite* sprite, int spriteScreenSize) {
-    // Test if this actually helps performance
+    // Appears to make no measureable performance difference
 
     int temp = spriteScreenSize / 3;// dont use this magic value finalise
 

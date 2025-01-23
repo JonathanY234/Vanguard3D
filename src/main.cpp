@@ -51,7 +51,7 @@ int main() {
     }
 
     // make the player object
-    std::shared_ptr<Player> firstPlayer = std::make_shared<Player>(0.5, 0.5, 0.0, 0.35);
+    std::shared_ptr<Player> firstPlayer = std::make_shared<Player>(5, 5, 0.4, 0.35);
     // ooh fancy smart pointer
 
     //mouselook stuff
@@ -62,15 +62,17 @@ int main() {
     SDL_Event event;
     
     // frame timing and cap stuff
-    Uint32 previousFrameStart = SDL_GetTicks();
-    Uint32 frameRateTestStart = SDL_GetTicks();
+    Uint64 previousFrameStart = SDL_GetPerformanceCounter();
+    Uint64 frameRateTestStart = SDL_GetPerformanceCounter();
     int frameCount = 0;
 
     while (running) {
         // get deltatime and frame limiter
-        Uint32 currentFrameStart = SDL_GetTicks();
-        double deltaTime = (currentFrameStart - previousFrameStart) / 1000.0; // convert to seconds
+        Uint64 currentFrameStart = SDL_GetPerformanceCounter();
+        double deltaTime = static_cast<double>(currentFrameStart - previousFrameStart) / SDL_GetPerformanceFrequency();// in seconds
         previousFrameStart = currentFrameStart;
+
+
 
         // Handle events
         while (SDL_PollEvent(&event)) {
@@ -132,23 +134,24 @@ int main() {
         SDL_UpdateWindowSurface(window);
 
         //should be improved with SDL_GetPerformanceCounter() for more accuracy to avoid the 62 fps problem
-        double actualFrameTime = SDL_GetTicks() - currentFrameStart; // Calculate how long the frame took
+        double actualFrameTime = static_cast<double>(SDL_GetPerformanceCounter() - currentFrameStart) * 1000.0 / SDL_GetPerformanceFrequency();// how long the frame took (millis)
         // Delay to maintain target FPS
+        //std::println("{}", actualFrameTime);
         if (actualFrameTime < Settings::getFrameTime()) {
-            SDL_Delay(Settings::getFrameTime() - actualFrameTime);
+            SDL_Delay(static_cast<Uint32>(Settings::getFrameTime() - actualFrameTime));
         }        
 
-        // Print FPS every x frames
+        // Print Avg FPS every n frames
         frameCount++;
-        int n = 100;
+        int n = 500;
         if (frameCount == n) {
-            double avgFrameTime = static_cast<double>(SDL_GetTicks() - frameRateTestStart) / n;
-            double avgFrameRate = 1000.0 / avgFrameTime;
-            std::println("{}", avgFrameTime);
+            double avgFrameTime = static_cast<double>(SDL_GetPerformanceCounter() - frameRateTestStart) / (n * SDL_GetPerformanceFrequency());
+            double avgFrameRate = 1 / avgFrameTime;
+            std::println("{}", avgFrameTime*1000);
             std::println("{} {}", "avg FPS:", avgFrameRate);
 
             frameCount = 0;
-            frameRateTestStart = SDL_GetTicks();
+            frameRateTestStart = SDL_GetPerformanceCounter();
         }
     
  
