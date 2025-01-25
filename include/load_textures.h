@@ -6,12 +6,14 @@
 
 class Texture {
 private:
-    std::vector<std::vector<Uint32>> pixelData;
+    Uint32* pixelData;// pointer to array
     int width, height;
 public:
     Texture(SDL_Surface* surface);
-    std::vector<Uint32> getColumn(double xPosWithinTexture) const;
+    Uint32* getColumn(double xPosWithinTexture) const;
     Uint32 test_getPixel(int x, int y);
+    int getWidth() const;
+    int getHeight() const;
 };
 extern Texture* wallTextures[];
 extern Texture* spriteTextures[];

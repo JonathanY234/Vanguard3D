@@ -11,7 +11,7 @@
 #include "level.h"
 
 // Define the global backBuffer
-SDL_Surface* backBuffer = nullptr;
+SDL_Surface* backBuffer = nullptr;// Richard says this is very bad
 
 int main() {
     loadTextures();
@@ -138,7 +138,7 @@ int main() {
         // Delay to maintain target FPS
         //std::println("{}", actualFrameTime);
         if (actualFrameTime < Settings::getFrameTime()) {
-            SDL_Delay(static_cast<Uint32>(Settings::getFrameTime() - actualFrameTime));
+            //SDL_Delay(static_cast<Uint32>(Settings::getFrameTime() - actualFrameTime));
         }        
 
         // Print Avg FPS every n frames

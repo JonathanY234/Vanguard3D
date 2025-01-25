@@ -3,17 +3,17 @@
 #include <string>
 #include <iostream>
 #include "load_textures.h"
-// maybe do texture loading concurrently to improve load times?
 
 
 Texture::Texture(SDL_Surface* surface) {
     width = surface->w;
     height = surface->h;
-    pixelData.resize(height, std::vector<Uint32>(width));
+
+    pixelData = new Uint32[width * height];
 
     for (int x=0; x<width; x++) {
         for (int y=0; y<height; y++) {
-            Uint32* pixel = (Uint32*)surface->pixels + y * surface->pitch / 4 + x; // fix rotated textures
+            Uint32* pixel = (Uint32*)surface->pixels + y * surface->pitch / 4 + x; // need to fix rotated textures 
 
             // TEMP HACK TO FIX COLOURS
             Uint32 colour = *pixel;
@@ -24,22 +24,25 @@ Texture::Texture(SDL_Surface* surface) {
             *pixel = colour;
             // ENDHACK
 
-            pixelData[y][x] = *pixel;
+            pixelData[x * height + y] = *pixel;
         }
     }
 }
-std::vector<Uint32> Texture::getColumn(double xPosWithinTexture) const {
+Uint32* Texture::getColumn(double xPosWithinTexture) const {
+    int x = (int)(xPosWithinTexture*width);// convert 0-1 to int in textures range
 
-    int test = (int)(xPosWithinTexture*100);
-
-
-    std::vector<Uint32> img_column = pixelData[test];// TODO: use dynamic arrays instead
-    return img_column;
+    return &pixelData[x * height];// points to the first pixel in the column
 }
 Uint32 Texture::test_getPixel(int x, int y) {
-    return pixelData[y][x];
+    return 0;
+    //return pixelData[y][x];
 }
-
+int Texture::getHeight() const {
+    return height;
+}
+int Texture::getWidth() const {
+    return width;
+}
 static const int numberOfWallTextures = 4;
 Texture* wallTextures[numberOfWallTextures];
 
@@ -52,7 +55,7 @@ void loadTextures() {
 
     for (int i=0; i<numberOfWallTextures; i++) {
         std::string filename = "textures/" + wall_texture_locations[i];
-        SDL_Surface* surface = IMG_Load(filename.c_str()); // Stop using IMG_Load use custom code, only need to support png and can drop sdl image dependency
+        SDL_Surface* surface = IMG_Load(filename.c_str()); // Stop using IMG_Load, only need to support png and can drop sdl image dependency
         if (!surface) {
             throw std::ios_base::failure("Image load error: " + filename);
         }

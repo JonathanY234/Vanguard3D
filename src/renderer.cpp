@@ -63,17 +63,19 @@ static void drawColumn(int x, int wallHeight, double xPosWithinTexture, int wall
         setPixel(x, i, floorColour);
     }
 
-    const std::vector<Uint32>& column = wallTextures[wallNum]->getColumn(xPosWithinTexture);
-    double pixel_gap = 100.0 / wallHeight;// why is this still hardcoded
+    int textureHeight = wallTextures[wallNum]->getHeight();
+    const Uint32* column = wallTextures[wallNum]->getColumn(xPosWithinTexture);
+    double pixel_gap = static_cast<double>(textureHeight) / wallHeight;
 
     int top = std::max(floorTop, 0);
     int bottom = std::min(wallTop, screenHeight);
     for (int i=top; i < bottom; i++) {
-        int textureY = std::round((i-floorTop)*pixel_gap);//    also experiment with more "up" taller walls
+        int textureY = std::round((i-floorTop)*pixel_gap);
         
         assert(textureY >= 0);
-        if (textureY >= static_cast<int>(column.size())) {// clamp textureY to within the texture
-            textureY = static_cast<int>(column.size() - 1);// fix for black lines
+        
+        if (textureY >= static_cast<int>(textureHeight)) {// clamp textureY to within the texture
+            textureY = static_cast<int>(textureHeight - 1);// fix for black lines
         }
         setPixel(x, i, column[textureY]);
     }
@@ -87,8 +89,9 @@ void drawSpriteColumn(int x, int spriteHeight, double xPosWithinTexture, int spr
     int unboundedTop = (screenHeight-spriteHeight) /2;
     int unboundedBottom = unboundedTop + spriteHeight; //this should only be calcuated once in the outer function. Maybe.
 
-    const std::vector<Uint32>& column = spriteTextures[spriteNum]->getColumn(xPosWithinTexture);
-    double pixel_gap = 100.0 / spriteHeight;// why is this still hardcoded
+    int textureHeight = spriteTextures[spriteNum]->getHeight();
+    const Uint32* column = spriteTextures[spriteNum]->getColumn(xPosWithinTexture);
+    double pixel_gap = static_cast<double>(textureHeight) / spriteHeight;// why is this still hardcoded
 
     //int top = std::max(unboundedTop, 0);
     //int bottom = std::min(unboundedBottom, screenHeight);
