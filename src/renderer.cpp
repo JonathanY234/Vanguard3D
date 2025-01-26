@@ -188,11 +188,11 @@ void drawFrame(double positionX, double positionY, double rotation) {
         double spriteDistance = sprite->getDistanceFrom(positionX, positionY);
         int spriteScreenSize = (int)(1.5 * Settings::getScreenHeight() / spriteDistance);
         double spriteAngle = rotation - calculateBearing(positionX,positionY,sprite->getPosition());
-        //std::cout << "player rotation " << rotation*(180/M_PI) << std::endl;
-        //std::cout << "enemy bearing " << calcB*(180/M_PI) << std::endl;
-        //std::cout << "spriteAngle " << spriteAngle*(180/M_PI) << std::endl;
-
-        //isInViewFrustum(positionX, positionY, rotation, sprite, spriteDistance);
+        double calcB = calculateBearing(positionX,positionY,sprite->getPosition());
+        //std::println("player rotation {}", rotation*(180/M_PI));
+        //std::println("enemy bearing {}", calcB*(180/M_PI));
+        //std::println("- {}", spriteAngle);
+        //std::println("spriteAngle {}", spriteAngle*(180/M_PI));
 
         int spriteCenterScreenColumn = (Settings::getScreenWidth() /2) - (spriteAngle / degreesPerPixel);
 

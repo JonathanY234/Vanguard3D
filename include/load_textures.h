@@ -9,7 +9,7 @@ private:
     Uint32* pixelData;// pointer to array
     int width, height;
 public:
-    Texture(SDL_Surface* surface);
+    Texture(unsigned char* stbiImage, int width, int height);
     Uint32* getColumn(double xPosWithinTexture) const;
     Uint32 test_getPixel(int x, int y);
     int getWidth() const;

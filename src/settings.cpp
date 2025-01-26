@@ -2,7 +2,7 @@
 #include <cmath>
 
 
-int Settings::screenHeight = 900;// idea: allow running at low res and scaling
+int Settings::screenHeight = 1000;// idea: allow running at low res and scaling
 int Settings::screenWidth = 1800;
 //int Settings::screenHeight = 200;
 //int Settings::screenWidth = 300;
