@@ -19,6 +19,5 @@ Probably an alien spaceship theme
 Compile by running the command `make` in the project directory.
 You may need some sdl dev dependencies. Only tested on linux at the moment.
 
-### Screenshots very outdated
-![alt text](images/demo1.png)
-![alt text](images/demo2.png)
+![alt text](images/SS1.png)
+![alt text](images/SS2.png)
