@@ -24,22 +24,6 @@ Texture::Texture(unsigned char* stbiImage, int width, int height) : width(width)
             pixelData[x * height + y] = (a << 24) | (r << 16) | (g << 8) | b;// pack into Uint32 (ARGB format)
         }
     }
-    //for (int x=0; x<width; x++) {
-    //    for (int y=0; y<height; y++) {
-    //        Uint32* pixel = (Uint32*)surface->pixels + y * surface->pitch / 4 + x;
-
-            // TEMP HACK TO FIX COLOURS
-            //Uint32 colour = *pixel;
-            //Uint8 red = (colour >> 0) & 0xFF;
-            //Uint8 blue = (colour >> 16) & 0xFF;
-            // Swap red and blue components
-            //colour = (colour & 0xFF00FF00) | (blue << 0) | (red << 16);
-            //*pixel = colour;
-            // ENDHACK
-
-    //        pixelData[x * height + y] = *pixel;
-    //    }
-    //}
 }
 Uint32* Texture::getColumn(double xPosWithinTexture) const {
     int x = (int)(xPosWithinTexture*width);// convert 0-1 to int in textures range
@@ -56,16 +40,20 @@ int Texture::getHeight() const {
 int Texture::getWidth() const {
     return width;
 }
-static const int numberOfWallTextures = 4;
+// stop these being global variables
+static const std::string wallTextureLocations[] = {"metalgrate1.png", "brickwall1.png", "rusty1.png", "rgb_test.png", "alienWallA.png",
+                                                                    "alienControlPanel.png"};
+static const std::string spriteTextureLocations[] = {"test_character.png", "test_character.png"};
+
+static const int numberOfWallTextures = std::size(wallTextureLocations);
 Texture* wallTextures[numberOfWallTextures];
 
-static const int numberOfSpriteTextures = 2;
+static const int numberOfSpriteTextures = std::size(spriteTextureLocations);
 Texture* spriteTextures[numberOfSpriteTextures];
 
 void loadTextures() {
     //test
-    const std::string wallTextureLocations[numberOfWallTextures] = {"metalgrate1.png", "brickwall1.png", "rusty1.png", "rgb_test.png"};
-    const std::string spriteTextureLocations[numberOfSpriteTextures] = {"test_character.png", "test_character.png"};
+    
     int width, height, channels;
 
     for (int i=0; i<numberOfWallTextures+numberOfSpriteTextures; i++) {
@@ -96,57 +84,7 @@ void loadTextures() {
 
         stbi_image_free(stbiImage);
     }
-    //End test
-    //const std::string wall_texture_locations[numberOfWallTextures] = {"metalgrate1.png", "brickwall1.png", "rusty1.png", "rgb_test.png"};
-
-    //for (int i=0; i<numberOfWallTextures; i++) {
-    //    std::string filename = "textures/" + wall_texture_locations[i];
-    //    SDL_Surface* surface = IMG_Load(filename.c_str());
-    //    if (!surface) {
-    //        throw std::ios_base::failure("Image load error: " + filename);
-    //    }
-    //    // Log if the pixel format is wrong
-    //    //SDL_PixelFormatEnum format = surface->format->format;
-    //    SDL_Surface* in_correct_format = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA32, 0);
-
-    //    if (!in_correct_format) {
-    //        std::cerr << "Error: Failed to convert surface format!" << std::endl;
-    //        return;  // Return or handle the error as necessary
-    //    }
-
-        
-    //    wallTextures[i] = new Texture(in_correct_format);
-    //    SDL_FreeSurface(in_correct_format);
-    //    SDL_FreeSurface(surface);
-
-    //}
     
-    //const std::string spriteTextureLocations[numberOfSpriteTextures] = {"test_character.png", "test_character.png"};
-
-    //for (int i=0; i<numberOfSpriteTextures; i++) {
-    //    std::string filename = "textures/" + spriteTextureLocations[i];
-    //    SDL_Surface* surface = IMG_Load(filename.c_str()); // Stop using IMG_Load use custom code, only need to support png and can drop sdl image dependency
-    //    if (!surface) {
-    //        throw std::ios_base::failure("Image load error: " + filename);
-    //    }
-    //    // Log if the pixel format is wrong
-    //    //SDL_PixelFormatEnum format = surface->format->format;
-    //    SDL_Surface* in_correct_format = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA32, 0);
-
-    //    if (!in_correct_format) {
-    //        std::cerr << "Error: Failed to convert surface format!" << std::endl;
-    //        return;  // Return or handle the error as necessary
-    //    }
-
-        
-    //    spriteTextures[i] = new Texture(in_correct_format);
-    //    SDL_FreeSurface(in_correct_format);
-    //    SDL_FreeSurface(surface);
-
-    //}
-    //std::cout << spriteTextures[0] << std::endl;
-    //std::cout << spriteTextures[1] << std::endl;
-    //spriteTextures[spriteNum]->getColumn(xPosWithinTexture);
 }
 // note: we are should probably clean up the texture data on program close
 //void removeTextures() {}

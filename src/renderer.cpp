@@ -19,11 +19,53 @@ void initialiseSprites() {
 
 
 // function to set the colour of the screen, no bounds checking, uses the global backbuffer
-// frequently used so needs to be performant
 static inline void setPixel(int x, int y, Uint32 colour) {
     Uint32* pixels = (Uint32*)backBuffer->pixels;
     pixels[(y * backBuffer->w) + x] = colour;
 } //make a super optimised column drawing setPixel
+
+void drawTexturedColumn(int x, int unboundedTop, int unboundedBottom, double xPosWithinTexture, bool wallNotSprite, int TexNum, double pixel_gap) {
+    /* draws a whole column of pixels to the screen within bounds from a texture
+       no input checking... yet
+    */
+    Uint32* pixels = (Uint32*)backBuffer->pixels;
+    int ScreenWidth = backBuffer->w;
+
+    int top = std::max(unboundedTop, 0);
+    int bottom = std::min(unboundedBottom, backBuffer->h);
+    
+    //get pointer to starting spot in backbuffer
+    Uint32* pixelPtr = &pixels[(top * ScreenWidth) + x];
+
+    //get pointer to the texture column
+    const Uint32* textureColumn;
+    if (wallNotSprite) {
+        textureColumn = wallTextures[TexNum]->getColumn(xPosWithinTexture);
+    } else {
+        textureColumn = spriteTextures[TexNum]->getColumn(xPosWithinTexture);
+    }
+    
+
+
+    for (int i=top; i < bottom; i++) {
+        int textureY = std::round((i-unboundedTop)*pixel_gap); //nearest neighbour scaling
+
+        *pixelPtr = textureColumn[textureY]; // draw the pixel
+        pixelPtr += ScreenWidth;
+    }
+}
+void drawRoofOrFloor() {
+    // todo
+}
+void drawRoofAndFloorInRows() {
+    Uint32* pixels = (Uint32*)backBuffer->pixels;
+    int width = backBuffer->w;
+    int height = backBuffer->h;
+    int halfPoint = width * height / 2;
+
+    std::fill(pixels, pixels + halfPoint, ceilingColour);
+    std::fill(pixels + halfPoint, pixels + width * height, floorColour);
+}
 
 //temp
 void make_dot(int x) {
@@ -53,53 +95,45 @@ void make_dot(int x) {
     setPixel(x -1, Settings::getScreenHeight()/2 +7, 0xFF0000FF);
 }
 
-static void drawColumn(int x, int wallHeight, double xPosWithinTexture, int wallNum) {
+static void drawWallColumn(int x, int wallHeight, double xPosWithinTexture, int wallNum) {
 
     int screenHeight = Settings::getScreenHeight();
-    int floorTop = (screenHeight-wallHeight) /2;
-    int wallTop = floorTop + wallHeight;
+    int unboundedTop = (screenHeight-wallHeight) /2;
+    int unboundedBottom = unboundedTop + wallHeight;
 
-    for (int i=0; i < floorTop; i++) {
+    /*for (int i=0; i < unboundedTop; i++) {
         setPixel(x, i, floorColour);
-    }
+    }*/
 
     int textureHeight = wallTextures[wallNum]->getHeight();
-    const Uint32* column = wallTextures[wallNum]->getColumn(xPosWithinTexture);
+    //const Uint32* column = wallTextures[wallNum]->getColumn(xPosWithinTexture);
+    
+    
     double pixel_gap = static_cast<double>(textureHeight) / wallHeight;
+    int top = std::max(unboundedTop, 0);
+    int bottom = std::min(unboundedBottom, screenHeight);
 
-    int top = std::max(floorTop, 0);
-    int bottom = std::min(wallTop, screenHeight);
-    for (int i=top; i < bottom; i++) {
-        int textureY = std::round((i-floorTop)*pixel_gap);
-        
-        assert(textureY >= 0);
-        
-        if (textureY >= static_cast<int>(textureHeight)) {// clamp textureY to within the texture
-            textureY = static_cast<int>(textureHeight - 1);// fix for black lines
-        }
-        setPixel(x, i, column[textureY]);
-    }
+    drawTexturedColumn(x, unboundedTop, unboundedBottom, xPosWithinTexture, 1, wallNum, pixel_gap);
 
-    for (int i=wallTop; i < screenHeight; i++) {
+    /*for (int i=bottom; i < screenHeight; i++) {
         setPixel(x, i, ceilingColour);
-    }
+    }*/
 }
-void drawSpriteColumn(int x, int spriteHeight, double xPosWithinTexture, int spriteNum) {//need to account for fact that strites are not in middle of screen
+void drawSpriteColumn(int x, int spriteHeight, double xPosWithinTexture, int spriteNum) {//need to account for fact that sprites are not in middle of screen
     int screenHeight = Settings::getScreenHeight();
     int unboundedTop = (screenHeight-spriteHeight) /2;
     int unboundedBottom = unboundedTop + spriteHeight; //this should only be calcuated once in the outer function. Maybe.
 
     int textureHeight = spriteTextures[spriteNum]->getHeight();
     const Uint32* column = spriteTextures[spriteNum]->getColumn(xPosWithinTexture);
-    double pixel_gap = static_cast<double>(textureHeight) / spriteHeight;// why is this still hardcoded
-
-    //int top = std::max(unboundedTop, 0);
-    //int bottom = std::min(unboundedBottom, screenHeight);
-    //no of the top of screen bounds protections??
+    double pixel_gap = static_cast<double>(textureHeight) / spriteHeight;
 
     int top = std::max(unboundedTop, 0);
     int bottom = std::min(unboundedBottom, screenHeight);
-    for (int i=top; i < bottom; i++) {
+
+    drawTexturedColumn(x, unboundedTop, unboundedBottom, xPosWithinTexture, 0, 0, pixel_gap);
+
+    /*for (int i=top; i < bottom; i++) {
         int textureY = std::round((i-unboundedTop)*pixel_gap);
         
         //assert(textureY >= 0);
@@ -107,10 +141,10 @@ void drawSpriteColumn(int x, int spriteHeight, double xPosWithinTexture, int spr
         //    textureY = static_cast<int>(column.size() - 1);// it fixes black lines
         //}
         setPixel(x, i, column[textureY]);
-    }
+    }*/
 }
 void drawSprite(Sprite* sprite, int spriteCenterScreenColumn, int spriteScreenSize, double* rayLengths, double spriteDistance) {
-    int temp = spriteScreenSize / 3;// dont use this magic value finalise
+    int temp = spriteScreenSize / 3;// dont use this should probably be based on the images width height ratio
 
     double xPosWithinTexture = 0;
     for (int i=-temp; i<temp; i++) {// switch to iterating from 0
@@ -139,7 +173,6 @@ double calculateBearing(double x1,double y1, std::tuple<double, double> point2) 
     double bearing = (atan2(deltaX, deltaY) - M_PI_2) * -1;
     return fmod(bearing + 2 * M_PI, 2 * M_PI);
 }
-//isInViewFrustum(positionX, positionY, rotation, spriteCenterScreenColumn, sprite, spriteDistance)) {
 bool isInViewFrustum(double playerX, double playerY, double playerRotation, int spriteCenterScreenColumn, Sprite* sprite, int spriteScreenSize) {
     // Appears to make no measureable performance difference
 
@@ -155,6 +188,8 @@ bool isInViewFrustum(double playerX, double playerY, double playerRotation, int 
 }
 
 void drawFrame(double positionX, double positionY, double rotation) {
+
+    drawRoofAndFloorInRows();
 
     int sWidth = Settings::getScreenWidth();
     double rayLengths[sWidth];// very naughty VLA
@@ -174,7 +209,7 @@ void drawFrame(double positionX, double positionY, double rotation) {
  
         raycastAngle = raycastAngle + degreesPerPixel;
 
-        drawColumn(i, wallHeight, xPosWithinTexture, wallnum);
+        drawWallColumn(i, wallHeight, xPosWithinTexture, wallnum);
     }
     // Sort sprites by distance so they render correctly
     std::sort(sprites.begin(), sprites.end(), [positionX, positionY](const Sprite* a, const Sprite* b) {
@@ -188,7 +223,7 @@ void drawFrame(double positionX, double positionY, double rotation) {
         double spriteDistance = sprite->getDistanceFrom(positionX, positionY);
         int spriteScreenSize = (int)(1.5 * Settings::getScreenHeight() / spriteDistance);
         double spriteAngle = rotation - calculateBearing(positionX,positionY,sprite->getPosition());
-        double calcB = calculateBearing(positionX,positionY,sprite->getPosition());
+        //double calcB = calculateBearing(positionX,positionY,sprite->getPosition());
         //std::println("player rotation {}", rotation*(180/M_PI));
         //std::println("enemy bearing {}", calcB*(180/M_PI));
         //std::println("- {}", spriteAngle);
