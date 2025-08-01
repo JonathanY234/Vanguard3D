@@ -131,7 +131,7 @@ void getSprites(std::vector<Sprite*>& sprites) {
     for (int y=0; y<levelSizeY; y++) {
         for (int x=0; x<levelSizeX; x++) {
             if (level[x][y] < 0) {
-                sprites.push_back(new Sprite(x,y,0, 0.35,level[x][y]));
+                sprites.push_back(new Sprite(x,y,0, 0.35,level[x][y]));//MEMORY LEAK!!!!!!!!!!!
             }
         }
     }

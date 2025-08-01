@@ -1,0 +1,3 @@
+-I/usr/include/SDL2
+-D_REENTRANT
+-std=c++23

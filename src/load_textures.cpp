@@ -1,5 +1,4 @@
 #include <SDL.h>
-//#include <SDL_image.h>
 #include <print>
 #include <string>
 #include <iostream>
@@ -25,14 +24,14 @@ Texture::Texture(unsigned char* stbiImage, int width, int height) : width(width)
         }
     }
 }
+Texture::~Texture() {
+    delete[] pixelData;
+}
+
 Uint32* Texture::getColumn(double xPosWithinTexture) const {
     int x = (int)(xPosWithinTexture*width);// convert 0-1 to int in textures range
 
     return &pixelData[x * height];// points to the first pixel in the column
-}
-Uint32 Texture::test_getPixel(int x, int y) {
-    return 0;
-    //return pixelData[y][x];
 }
 int Texture::getHeight() const {
     return height;
@@ -52,7 +51,6 @@ static const int numberOfSpriteTextures = std::size(spriteTextureLocations);
 Texture* spriteTextures[numberOfSpriteTextures];
 
 void loadTextures() {
-    //test
     
     int width, height, channels;
 
@@ -86,5 +84,12 @@ void loadTextures() {
     }
     
 }
-// note: we are should probably clean up the texture data on program close
-//void removeTextures() {}
+void removeTextures() {
+    std::println("hello from remove textures");
+    for (int i=0; i < numberOfWallTextures; i++) {
+        delete wallTextures[i];
+    }
+    for (int i=0; i < numberOfSpriteTextures; i++) {
+        delete spriteTextures[i];
+    }
+}

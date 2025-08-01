@@ -1,11 +1,7 @@
 #include <tuple>
 #include <cmath>
-#include <memory>
 #include "game.h"
 #include "level.h"
-
-//temp
-#include <iostream>
 
 Sprite::Sprite(double x, double y, double rotation, double size, int spriteType)
     : positionX(x), positionY(y), rotation(rotation), size(size), spriteType(spriteType) {}

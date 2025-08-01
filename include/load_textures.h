@@ -2,7 +2,6 @@
 #define LOAD_TEXTURES_H
 
 #include <SDL.h>
-#include <vector>
 
 class Texture {
 private:
@@ -10,13 +9,14 @@ private:
     int width, height;
 public:
     Texture(unsigned char* stbiImage, int width, int height);
+    ~Texture();
     Uint32* getColumn(double xPosWithinTexture) const;
-    Uint32 test_getPixel(int x, int y);
     int getWidth() const;
     int getHeight() const;
 };
 extern Texture* wallTextures[];
 extern Texture* spriteTextures[];
 void loadTextures();
+void removeTextures();
 
 #endif // LOAD_TEXTURES_H

@@ -1,14 +1,12 @@
 #include <SDL.h>
 #include <iostream>
 #include <print>
-#include <tuple>
 
 #include "settings.h"
 #include "renderer.h"
 #include "game.h"
 
 #include "load_textures.h"
-#include "level.h"
 
 // Define the global backBuffer
 SDL_Surface* backBuffer = nullptr;// Richard says this is very bad
@@ -158,6 +156,7 @@ int main() {
     }
 
     // Clean up
+    removeTextures();
     SDL_FreeSurface(backBuffer);
     SDL_FreeSurface(frontBuffer);
     SDL_DestroyWindow(window);

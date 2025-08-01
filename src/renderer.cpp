@@ -22,7 +22,7 @@ void initialiseSprites() {
 static inline void setPixel(int x, int y, Uint32 colour) {
     Uint32* pixels = (Uint32*)backBuffer->pixels;
     pixels[(y * backBuffer->w) + x] = colour;
-} //make a super optimised column drawing setPixel
+}
 
 void drawTexturedColumn(int x, int unboundedTop, int unboundedBottom, double xPosWithinTexture, bool wallNotSprite, int TexNum, double pixel_gap) {
     /* draws a whole column of pixels to the screen within bounds from a texture
@@ -45,8 +45,6 @@ void drawTexturedColumn(int x, int unboundedTop, int unboundedBottom, double xPo
         textureColumn = spriteTextures[TexNum]->getColumn(xPosWithinTexture);
     }
     
-
-
     for (int i=top; i < bottom; i++) {
         int textureY = std::round((i-unboundedTop)*pixel_gap); //nearest neighbour scaling
 
